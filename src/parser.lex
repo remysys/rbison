@@ -238,7 +238,9 @@ int main(int argc, char *argv[])
 		if (ii_newfile(Input_file_name = argv[1]) < 0) {
 			perror(argv[1]);
 		} else {
-			plex(lex);
+			while(lex = yylex()) {
+			  plex(lex);
+		  }
 		}
 	}
 }
