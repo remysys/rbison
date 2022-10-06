@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 			plex(lex);
 		}
 	} else {
-		if (ii_newfile(Input_file_name == argv[1]) < 0) {
+		if (ii_newfile(Input_file_name = argv[1]) < 0) {
 			perror(argv[1]);
 		} else {
 			plex(lex);
