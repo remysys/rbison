@@ -1,10 +1,10 @@
-INCLUDE	= ../include
+INCLUDE = ../include
 CC = gcc
-CFLAGS  = -I$(INCLUDE) -g
+CFLAGS = -I$(INCLUDE) -g
 
-#CFLAGS  = -I$(INCLUDE) -DMAIN
+#CFLAGS = -I$(INCLUDE) -DMAIN
 
-yylex.c :	parser.lex
+yylex.c: parser.lex
 	rlex -vl parser.lex
 
 test: yylex.c

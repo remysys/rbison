@@ -1,8 +1,8 @@
 %term  ID   /* a string of lower-case characters */
 %term  NUM  /* a number */
 
-%left  PLUS 	
-%left  STAR	
+%left  PLUS
+%left  STAR
 %left  LP RP  /* (  ) */
 
 %{
@@ -32,14 +32,14 @@ typedef char *stype;	       /* value stack */
  * confused with rvalues.
  */
 
-s	: e;
+s : e;
 
-e	: e PLUS e  { yycode("%s += %s\n", $1, $3); free_name( $3 ); }
-	| e STAR e  { yycode("%s *= %s\n", $1, $3); free_name( $3 ); }
-	| LP e RP   { $$ = $2; }
-  | NUM       { yycode("%s = %s\n",  $$ = new_name(), yytext ); }
-	| ID        { yycode("%s = _%s\n", $$ = new_name(), yytext ); }
-	;
+e : e PLUS e  { yycode("%s += %s\n", $1, $3); free_name($3); }
+  | e STAR e  { yycode("%s *= %s\n", $1, $3); free_name($3); }
+  | LP e RP   { $$ = $2; }
+  | NUM       { yycode("%s = %s\n",  $$ = new_name(), yytext); }
+  | ID        { yycode("%s = _%s\n", $$ = new_name(), yytext); }
+  ;
 %%
 
 char *yypstk(void *val, char *symbol)
@@ -55,7 +55,7 @@ char *yypstk(void *val, char *symbol)
 char *Names[] = {"t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"};
 char **Namep  = Names;
 
-char	*new_name()
+char *new_name()
 {
   /* return a temporary-variable name by popping one off the name stack */
 
@@ -68,11 +68,10 @@ char	*new_name()
 }
 
 void free_name(char *s)
-{	
+{
   /* free up a previously allocated name */
   *--Namep = s;
 }
-
 
 void yy_init_occs(void *tos )
 {

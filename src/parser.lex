@@ -1,39 +1,37 @@
 %{
-  #include <stdio.h>
+#include <stdio.h>
   
-  #define CREATING_LALR_PARSER /* suppress various definitions in parser.h */
-	#include "parser.h"
-  #include "yyout.h"
+#define CREATING_LALR_PARSER /* suppress various definitions in parser.h */
+#include "parser.h"
+#include "yyout.h"
 
-  /* lexical analyzer for rbison. 
-   * whitespace, comments, and otherwise illegal characters must be handled
-   * specially. when we're processing code blocks, we need to get at
-   * the characters so that they can be passed to the output, otherwise, the
-   * characters should be ignored. The ws() and nows() subroutines (at the
-   * bottom of the file) switch between these behaviors by changing the value
-   * if Ignore. If Ignore is true, white space is ignored.
-   */
+/* lexical analyzer for rbison. 
+ * whitespace, comments, and otherwise illegal characters must be handled
+ * specially. when we're processing code blocks, we need to get at
+ * the characters so that they can be passed to the output, otherwise, the
+ * characters should be ignored. the ws() and nows() subroutines (at the
+ * bottom of the file) switch between these behaviors by changing the value
+ * if Ignore. If Ignore is true, white space is ignored.
+ */
 
-  static int Ignore = 0;
-  static int Start_line;  /* starting line number */
-  int No_lines = 0;
-  char *Input_file_name;
+static int Ignore = 0;
+int No_lines = 0;
+char *Input_file_name;
 
-  /* 
-   * prototypes for functions at the bottom of this file: 
-   */
+/* 
+ * prototypes for functions at the bottom of this file: 
+ */
 
-  void stripcr(char *src);  /* remove carriage returns (but not linefeeds) from src */
-  void nows(void);          /* ignore white space, etc */
-  void ws(void);            /* don't ignore white space, etc */
-  void lerror(int status, char *fmt, ...);
-  void output(char *fmt, ...);
+void nows(void);            /* ignore white space, etc */
+void ws(void);              /* don't ignore white space, etc */
+void lerror(int status, char *fmt, ...);
+void output(char *fmt, ...);
 %}
 
-c_name	[A-Za-z_][A-Za-z_0-9]*
+c_name  [A-Za-z_][A-Za-z_0-9]*
 %%
 
-"/*"	{ /* absorb a comment (treat it as WHITESPACE) */
+"/*"  { /* absorb a comment (treat it as WHITESPACE) */
         int i;
         int start = yylineno;
 
@@ -46,7 +44,6 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
             lerror(NOHDR, "%d too long, truncating\n", start);
           } else if (i == '*' && ii_lookahead(1) == '/') {
             input();
-            stripcr(yytext);
             if (Ignore) {
               goto end;
             } else {
@@ -59,7 +56,7 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
         end:; 
       }
 
-\{	{
+\{  {
       int i;
       int nestlev;    /* brace-nesting level */
       int lb1;        /* previous character */
@@ -72,18 +69,18 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
       in_string = 0;
       in_char_const = 0;
       in_comment = 0;
-      Start_line = yylineno;
+      int start = yylineno;
 
       for (nestlev = 1; i = input(); lb2 = lb1, lb1 = i) {
         if (lb2 == '\n' && lb1 == '%' && i == '%') {
-          lerror(FATAL, "%%%% in code block starting on line %d\n", Start_line);
+          lerror(FATAL, "%%%% in code block starting on line %d\n", start);
         }
 
         if (i < 0) {
           ii_unterm();
           ii_flush(1);
           ii_term();
-          lerror(FATAL, "code block starting on line %d too long\n", Start_line);
+          lerror(FATAL, "code block starting on line %d too long\n", start);
         }
 
         if (i == '\n' && in_string) {
@@ -93,7 +90,8 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
 
         /* take case of \{, "{", '{', \}, "}", '}' */
         if (i == '\\') {
-          if (!(i = input())) { /* discard backslash */
+          i = input();
+          if (i <= 0) { /* discard backslash */
             break;
           } else {
             continue;
@@ -116,18 +114,17 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
           }
 
           if (i == '}' && --nestlev <= 0) {
-            stripcr(yytext);
             return ACTION;
           }
         }
       }
 
-      lerror(FATAL, "eof in code block starting on line %d\n", Start_line);
+      lerror(FATAL, "eof in code block starting on line %d\n", start);
     }
 
 ^"%%"	return SEPARATOR;
 
-"%{"[\s\t]*	{
+"%{"[\s\t]* {
               /* copy a code block to the output file */
               int c, looking_for_brace = 0;
               #undef output 	/* replace macro with function in main.c */
@@ -138,7 +135,7 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
               while (c = input()) { /* while not at end of file */
                 if (c == -1) { /* buffer is full, flush it */
                   ii_flushbuf();
-                } else if (c != '\r') {
+                } else {
                   if (looking_for_brace) { /* last char was a % */
                     if (c == '}') {
                       break;
@@ -158,43 +155,30 @@ c_name	[A-Za-z_][A-Za-z_0-9]*
 	            return CODE_BLOCK;
             }
  
-<{c_name}>	return FIELD;
-"%union"	return PERCENT_UNION;
-"%token"	|
-"%term"		return TERM_SPEC;
-"%type"		return TYPE;
-"%left"		return LEFT;
-"%right"	return RIGHT;
-"%nonassoc"	return NONASSOC;
-"%prec"	return PREC;
-"%start"	return START;
-":"	return COLON;
-"|"	return OR;
-";"	return SEMI;
+<{c_name}>  return FIELD;
+"%union"    return PERCENT_UNION;
+"%token"    |
+"%term"     return TERM_SPEC;
+"%type"     return TYPE;
+"%left"     return LEFT;
+"%right"    return RIGHT;
+"%nonassoc" return NONASSOC;
+"%prec"	    return PREC;
+"%start"    return START;
+":"         return COLON;
+"|"         return OR;
+";"         return SEMI;
 
-[^\x00-\s%\{}[\]()*:|;,<>]+	return NAME;
-\x0d	; /* discard carriage return (\r) */
-[\x00-\x0c\x0e-\s] if (!Ignore) return WHITESPACE;
+[^\x00-\s%\{}[\]()*:|;,<>]+     return NAME;
+[\x00-\s] { if (!Ignore) { 
+              return WHITESPACE;
+            } 
+          }
 %%
 
-void nows() {	Ignore = 1; }		/* ignore white space */
-void ws() { Ignore = 0; }			/* don't ignore white space */ 
+void nows() { Ignore = 1; }   /* ignore white space */
+void ws() { Ignore = 0; }     /* don't ignore white space */ 
 
-int start_action() 	/* return starting line number of most recently read ACTION block */
-{
-	return Start_line;
-}
-
-void stripcr(char *src)  /* remove all \r's (but not \n's) for src */
-{
-	char *dest;
-	for (dest = src; *src; src++) {
-		if (*src != '\r') {
-			*dest++ = *src;
-		}
-	}
-	*dest = '\0';
-}
 
 #ifdef MAIN	/* test routine,  reads lexemes and prints them */
 
@@ -204,65 +188,66 @@ FILE *Output;
 #include <stdlib.h>
 
 void plex(int lex) {
-	switch(lex) {
-		case ACTION:				printf("ACTION (%s)\n", yytext); break;
-		case CODE_BLOCK: 		printf("CODE_BLOCK (%s)\n", yytext); break;
-		case COLON: 				printf("COLON (%s)\n", yytext); break;
-		case FIELD: 				printf("FIELD (%s)\n", yytext); break;
-		case LEFT: 					printf("LEFT (%s)\n", yytext); break;
-		case NAME: 					printf("NAME (%s)\n", yytext); break;
-		case NONASSOC: 			printf("NONASSOC (%s)\n", yytext); break;
-		case OR: 						printf("OR (%s)\n", yytext); break;
-		case PERCENT_UNION: printf("PERCENT_UNION (%s)\n", yytext); break;
-		case PREC: 					printf("PREC (%s)\n", yytext); break;
-		case RIGHT: 				printf("RIGHT (%s)\n", yytext); break;
-		case SEMI: 					printf("SEMI (%s)\n", yytext); break;
-		case SEPARATOR: 		printf("SEPARATOR (%s)\n", yytext); break;
-		case START: 				printf("START (%s)\n", yytext); break;
-  	case TERM_SPEC: 		printf("TERM_SPEC (%s)\n", yytext); break;
-    case TYPE: 					printf("TYPE (%s)\n", yytext); break;
-    case WHITESPACE: 		printf("WHITESPACE (%s)\n", yytext); break;
-    default: 						printf("*** unknown *** (%s)\n",yytext); break;
+  switch(lex) {
+    case ACTION:        printf("ACTION (%s)\n", yytext); break;
+    case CODE_BLOCK:    printf("CODE_BLOCK (%s)\n", yytext); break;
+    case COLON:         printf("COLON (%s)\n", yytext); break;
+    case FIELD:         printf("FIELD (%s)\n", yytext); break;
+    case LEFT:          printf("LEFT (%s)\n", yytext); break;
+    case NAME:          printf("NAME (%s)\n", yytext); break;
+    case NONASSOC:      printf("NONASSOC (%s)\n", yytext); break;
+    case OR:            printf("OR (%s)\n", yytext); break;
+    case PERCENT_UNION: printf("PERCENT_UNION (%s)\n", yytext); break;
+    case PREC:          printf("PREC (%s)\n", yytext); break;
+    case RIGHT:         printf("RIGHT (%s)\n", yytext); break;
+    case SEMI:          printf("SEMI (%s)\n", yytext); break;
+    case SEPARATOR:     printf("SEPARATOR (%s)\n", yytext); break;
+    case START:         printf("START (%s)\n", yytext); break;
+    case TERM_SPEC:     printf("TERM_SPEC (%s)\n", yytext); break;
+    case TYPE:          printf("TYPE (%s)\n", yytext); break;
+    case WHITESPACE:    printf("WHITESPACE (%s)\n", yytext); break;
+    default:            printf("*** unknown *** (%s)\n",yytext); break;
 	}
 }
 
 int main(int argc, char *argv[])
 {
-	int lex;
+  int lex;
   Output = stdout;
-	if (1 == argc) {
-		while(lex = yylex()) {
-			plex(lex);
-		}
-	} else {
-		if (ii_newfile(Input_file_name = argv[1]) < 0) {
-			perror(argv[1]);
-		} else {
-			while(lex = yylex()) {
-			  plex(lex);
-		  }
-		}
-	}
+  nows();
+
+  
+  if (1 == argc) {
+    while(lex = yylex()) {
+      plex(lex);
+    }
+  } else {
+    if (ii_newfile(Input_file_name = argv[1]) < 0) {
+      perror(argv[1]);
+    } else {
+      while(lex = yylex()) {
+        plex(lex);
+      }
+    }
+  }
 }
 
 void output(char *fmt, ...) 	/* the real versions of these subroutines are in main.c.  */
 {	
   /* these stubs are here for debugging a standalone */
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(Output, fmt, args);
-	fflush(Output);
+  va_list args;
+  va_start(args, fmt);
+  vfprintf(Output, fmt, args);
+  fflush(Output);
 }
-
 
 void lerror(int status, char *fmt, ...)
 {
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	fflush(stderr);
-	if (status == FATAL) {
-		exit(1);
-	}
+  va_list args;
+  va_start(args, fmt);
+  vfprintf(stderr, fmt, args);
+  if (status == FATAL) {
+    exit(1);
+  }
 }
 #endif
