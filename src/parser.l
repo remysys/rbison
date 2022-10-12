@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
   
-#define CREATING_LALR_PARSER /* suppress various definitions in parser.h */
+#define CREATING_LALR_PARSER /* suppress various definitions in parser.h that conflict with rlex-generated defs */
 #include "parser.h"
 #include "yyout.h"
 
@@ -178,7 +178,6 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
 
 void nows() { Ignore = 1; }   /* ignore white space */
 void ws() { Ignore = 0; }     /* don't ignore white space */ 
-
 
 #ifdef MAIN	/* test routine,  reads lexemes and prints them */
 
