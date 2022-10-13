@@ -1,16 +1,15 @@
 INCLUDE = ../include
 CC = gcc
-CFLAGS = -I$(INCLUDE) -g
+CFLAGS = -I$(INCLUDE) -DMAIN -g
 
-#CFLAGS = -I$(INCLUDE) -DMAIN
+lex.yy.c: parser.l
+	rlex -vl parser.l
 
-yylex.c: parser.lex
-	rlex -vl parser.lex
+test: lex.yy.c
+	gcc -o parser lex.yy.c -llex
 
-test: yylex.c
-	gcc -o parser -DMAIN yylex.c -llex
 clean:
 	rm -fr *.o
-	rm -fr yylex.c
+	rm -fr lex.yy.c
 
 

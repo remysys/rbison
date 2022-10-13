@@ -3,7 +3,7 @@
   
 #define CREATING_LALR_PARSER /* suppress various definitions in parser.h that conflict with rlex-generated defs */
 #include "parser.h"
-#include "yyout.h"
+#include "llout.h"
 
 /* lexical analyzer for rbison. 
  * whitespace, comments, and otherwise illegal characters must be handled
@@ -188,24 +188,24 @@ FILE *Output;
 
 void plex(int lex) {
   switch(lex) {
-    case ACTION:        printf("ACTION (%s)\n", yytext); break;
-    case CODE_BLOCK:    printf("CODE_BLOCK (%s)\n", yytext); break;
-    case COLON:         printf("COLON (%s)\n", yytext); break;
-    case FIELD:         printf("FIELD (%s)\n", yytext); break;
-    case LEFT:          printf("LEFT (%s)\n", yytext); break;
-    case NAME:          printf("NAME (%s)\n", yytext); break;
-    case NONASSOC:      printf("NONASSOC (%s)\n", yytext); break;
-    case OR:            printf("OR (%s)\n", yytext); break;
-    case PERCENT_UNION: printf("PERCENT_UNION (%s)\n", yytext); break;
-    case PREC:          printf("PREC (%s)\n", yytext); break;
-    case RIGHT:         printf("RIGHT (%s)\n", yytext); break;
-    case SEMI:          printf("SEMI (%s)\n", yytext); break;
-    case SEPARATOR:     printf("SEPARATOR (%s)\n", yytext); break;
-    case START:         printf("START (%s)\n", yytext); break;
-    case TERM_SPEC:     printf("TERM_SPEC (%s)\n", yytext); break;
-    case TYPE:          printf("TYPE (%s)\n", yytext); break;
-    case WHITESPACE:    printf("WHITESPACE (%s)\n", yytext); break;
-    default:            printf("*** unknown *** (%s)\n",yytext); break;
+    case ACTION:        printf("ACTION (%s)\n", yytext);          break;
+    case CODE_BLOCK:    printf("CODE_BLOCK (%s)\n", yytext);      break;
+    case COLON:         printf("COLON (%s)\n", yytext);           break;
+    case FIELD:         printf("FIELD (%s)\n", yytext);           break;
+    case LEFT:          printf("LEFT (%s)\n", yytext);            break;
+    case NAME:          printf("NAME (%s)\n", yytext);            break;
+    case NONASSOC:      printf("NONASSOC (%s)\n", yytext);        break;
+    case OR:            printf("OR (%s)\n", yytext);              break;
+    case PERCENT_UNION: printf("PERCENT_UNION (%s)\n", yytext);   break;
+    case PREC:          printf("PREC (%s)\n", yytext);            break;
+    case RIGHT:         printf("RIGHT (%s)\n", yytext);           break;
+    case SEMI:          printf("SEMI (%s)\n", yytext);            break;
+    case SEPARATOR:     printf("SEPARATOR (%s)\n", yytext);       break;
+    case START:         printf("START (%s)\n", yytext);           break;
+    case TERM_SPEC:     printf("TERM_SPEC (%s)\n", yytext);       break;
+    case TYPE:          printf("TYPE (%s)\n", yytext);            break;
+    case WHITESPACE:    printf("WHITESPACE (%s)\n", yytext);      break;
+    default:            printf("*** unknown *** (%s)\n",yytext);  break;
 	}
 }
 
