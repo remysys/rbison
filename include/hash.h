@@ -28,5 +28,7 @@ void delsym(HASH_TAB *tabp, void *sym);
 int ptab(HASH_TAB *tabp, ptab_t print, void *param, int sort);
 
 unsigned int hash_add(unsigned char *name);
+unsigned int hash_pjw (unsigned char *name);
+unsigned int hash_bkdr(unsigned char *name);
 
 #endif

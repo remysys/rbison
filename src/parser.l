@@ -1,9 +1,10 @@
 %{
 #include <stdio.h>
+#include "llout.h"
   
 #define CREATING_LALR_PARSER /* suppress various definitions in parser.h that conflict with rlex-generated defs */
 #include "parser.h"
-#include "llout.h"
+
 
 /* lexical analyzer for rbison. 
  * whitespace, comments, and otherwise illegal characters must be handled

@@ -1,8 +1,8 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
-#include "set.h"
-#include "hash.h"
+#include <set.h>
+#include <hash.h>
 
 /*
  * various error exit stat. note that other errors found while parsing cause
@@ -85,7 +85,7 @@
  * take precedence over the the default ones in parser.h in this case
  */
 
-#ifndef CREATING_RBISON_PARSER
+#ifndef CREATING_LALR_PARSER
 typedef int YY_TTYPE;
 #endif
 
