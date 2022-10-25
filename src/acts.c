@@ -133,7 +133,7 @@ void pnonterm(SYMBOL *sym, FILE *stream)
 
   fprintf(stream, " <%s>\n", sym->field);
 
-  if (Verbose > 1) {
+  if (Symbols > 1) {
     /* print first sets only if you want really verbose output */
     fprintf(stream, "  FIRST: ");
     pset(sym->first, (pset_t)print_tok, stream);

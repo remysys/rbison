@@ -242,7 +242,7 @@ void _set_op(int op, SET *dest, SET *src)
       }
       break;
     
-    case _ASSIGN: 
+    case _ASSIGN:
       while(--ssize >= 0) {
         *d++ = *s++;
       }

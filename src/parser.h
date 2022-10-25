@@ -152,7 +152,6 @@ CLASS FILE *Output          I( = stdout );    /* Output stream */
 CLASS int Public            I( = 0 );         /* make static symbols public */
 CLASS int Symbols           I( = 0 );         /* generate symbol table */
 CLASS int Threshold         I( = 4 );         /* compression threshold */
-CLASS int Uncompressed      I( = 0 );         /* don't compress tables */
 CLASS int Use_stdout        I( = 0 );         /* -t specified on command line */
 CLASS int Verbose           I( = 0 );         /* Verbose-mode output (1 for -v and 2 for -V)*/
 
