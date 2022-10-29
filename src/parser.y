@@ -95,30 +95,4 @@ rhs : NAME { add_to_rhs(yytext, 0); } rhs
 end_rhs : OR right_sides
     | SEMI
     ;
-%% 
-
-/* 
- * support routines for the rbison parser. the arguments must be declared void*
- * to get them to match the prototypes in l.h. they are really ponters to
- * yyvstypes, though.
- */
-
-
-void yy_init_rbison(void *tovs) 
-{
-  ((yyvstype *) tovs)->left = ((yyvstype *) tovs)->right = "";
-
-}
-
-char *yypstk(void *tovs, char *tods) 
-{
-  static char buf[128];
-  yyvstype *vs = (yyvstype *) tovs;
-
-  if (*(vs->left) || *(vs->right)) {
-    sprintf(buf, "[%s,%s]", vs->left, vs->right);
-    return buf;
-  } else {
-    return "";
-  }
-}
+%%

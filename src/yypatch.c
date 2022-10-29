@@ -1,5 +1,5 @@
-#include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "parser.h"
 
 
@@ -9,7 +9,7 @@ static int Last_real_nonterm; /* this is the number of the last
                                * patch() creates]
                                */
 
-#ifdef NEVER 
+#ifdef NEVER
   | the symbol table needs some shuffling around to make it useful 
   | in an LALR application. (it was designed to make it easy for the
   | parser). first of all, all actions must be applied on a
@@ -28,61 +28,87 @@ static int Last_real_nonterm; /* this is the number of the last
   | since the new productions go to epsilon, this transformation does
   | not affect either the first or follow sets.
   |
-  | note that you don't have to actually add any symbols to the table;
+  | note that you dont have to actually add any symbols to the table;
   | you can just modify the values of the action symbols to turn them
   | into nonterminals
   |
 #endif
 
-
-void patch()
+static void print_one_case(int case_val, char *action, int rhs_size, int lineno, PRODUCTION *prod)
 {
-  /* this subroutine does several things:
-   *
-   *	 * it modifies the symbol table as described in the previous text
-   *	 * it prints the action subroutine and deletes the memory associated
-   *	      with the actions
+  /* case_val: numeric value attached to case itself
+   * action:  source code to execute in case
+   * rhs_size: number of symbols on right-hand side
+   * lineno: input line number (for #lines)
+   * prod: pointer to right-hand side
    */
 
-  static char *top[] = {
-	  "",
-	  "yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer",
-	  "{",
+  /* print out one action as a case statement. all $-specifiers are mapped
+   * to references to the value stack: $$ becomes Yy_vsp[0], $1 becomes
+   * Yy_vsp[-1], etc. the rhs_size argument is used for this purpose.
+   * [see do_dollar() in yydollar.c for details]
+   */
 
-	  " /* This subroutine holds all the actions in the original input",
-	  "  * specification. It normally returns 0, but if any of your",
-	  "  * actions return a non-zero number, then the parser halts",
-	  "  * immediately, returning that nonzero number to the calling",
-	  "  * subroutine.",
-	  "  */",
-	  "",
-	  "  switch( yypnum )",
-	  "  {",
-	  NULL
-  };
+  int num, i;
+  char fname[40], *fp; /* place to assemble $<fname>1 */
   
-  static char *bot[] = {
-	  "",
-	  "  }",
-	  "",
-	  "  return 0;",
-	  "}",
-	  NULL
-  };
-
-  Last_real_nonterm = Cur_nonterm;
-  
-  if (Make_actions) {
-    printv(Output, top);
+  if (!Make_actions) {
+    return;
   }
 
-  ptab(Symtab, (ptab_t)dopatch, NULL, 0);
-  
-  if (Make_actions) {
-    printv(Output, bot);
+  output("\n  case %d: /* %s */\n\n\t", case_val, production_str(prod));
+
+  if (!No_lines) {
+    output("#line %d \"%s\"\n\t", lineno, Input_file_name);
   }
+
+  while (*action) {
+    
+    if (*action != '$') {
+      output("%c", *action++);
+    } else {
+      /* skip the attribute reference. the if statement handles $$ the
+	     * else clause handles the two forms: $N and $-N, where N is a
+	     * decimal number. when we hit the do_dollar call (in the output()
+	     * call), "num" holds the number associated with N, or DOLLAR_DOLLAR
+	     * in the case of $$.
+	     */
+      
+      if (*++action != '<') {
+        *fname = '\0';
+      } else {
+        ++action; /* skip the < */
+        fp = fname;
+        
+        for (i = sizeof(fname); --i > 0 && *action && *action != '>'; ) {
+          *fp++ = *action++;
+        }
+        
+        *fp = '\0';
+
+        if (*action == '>') {
+          ++action; /* skip the > */
+        }
+
+        if (*action == '$') {
+          num = DOLLAR_DOLLAR;
+          ++action;
+        } else {
+          num = atoi(action);
+          if (*action == '-') {
+            ++action;
+          }
+          while (isdigit(*action)) {
+            ++action;
+          }
+        }
+      }
+
+      output("%s", do_dollar(num, rhs_size, lineno, prod, fname));
+    }
+  }
+  output("\n  break;\n");
 }
-
 
 /*
  * dopatch() does two things, it modifies the symbol table for use with
@@ -176,79 +202,50 @@ static void dopatch(SYMBOL *sym)
   }
 }
 
-static void print_one_case(int case_val, char *action, int rhs_size, int lineno, PRODUCTION *prod)
+void patch()
 {
-  /* case_val: numeric value attached to case itself
-   * action:  source code to execute in case
-   * rhs_size: number of symbols on right-hand side
-   * lineno: input line number (for #lines)
-   * prod: pointer to right-hand side
+  /* this subroutine does several things:
+   *
+   *	 * it modifies the symbol table as described in the previous text
+   *	 * it prints the action subroutine and deletes the memory associated
+   *	      with the actions
    */
 
-  /* print out one action as a case statement. all $-specifiers are mapped
-   * to references to the value stack: $$ becomes Yy_vsp[0], $1 becomes
-   * Yy_vsp[-1], etc. the rhs_size argument is used for this purpose.
-   * [see do_dollar() in yydollar.c for details]
-   */
+  static char *top[] = {
+	  "",
+	  "yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer",
+	  "{",
 
-  int num, i;
-  char fname[40], *fp /* place to assemble $<fname>1 */
+	  " /* This subroutine holds all the actions in the original input",
+	  "  * specification. It normally returns 0, but if any of your",
+	  "  * actions return a non-zero number, then the parser halts",
+	  "  * immediately, returning that nonzero number to the calling",
+	  "  * subroutine.",
+	  "  */",
+	  "",
+	  "  switch( yypnum )",
+	  "  {",
+	  NULL
+  };
   
-  if (!Make_actions) {
-    return;
+  static char *bot[] = {
+	  "",
+	  "  }",
+	  "",
+	  "  return 0;",
+	  "}",
+	  NULL
+  };
+
+  Last_real_nonterm = Cur_nonterm;
+  
+  if (Make_actions) {
+    printv(Output, top);
   }
 
-  output("\n  case %d: /* %s */\n\n\t", case_val, production_str(prod));
-
-  if (!No_lines) {
-    output("#line %d \"%s\"\n\t", lineno, Input_file_name);
+  ptab(Symtab, (ptab_t)dopatch, NULL, 0);
+  
+  if (Make_actions) {
+    printv(Output, bot);
   }
-
-  while (*action) {
-    
-    if (*action != '$') {
-      output("%c", *action++);
-    } else {
-      /* skip the attribute reference. the if statement handles $$ the
-	     * else clause handles the two forms: $N and $-N, where N is a
-	     * decimal number. when we hit the do_dollar call (in the output()
-	     * call), "num" holds the number associated with N, or DOLLAR_DOLLAR
-	     * in the case of $$.
-	     */
-      
-      if (*++action != '<') {
-        *fname = '\0';
-      } else {
-        ++action; /* skip the < */
-        fp = fname;
-        
-        for (i = sizeof(fname); --i > 0 && *action && *action != '>'; ) {
-          *fp++ = *action++;
-        }
-        
-        *fp = '\0';
-
-        if (*action == '>') {
-          ++action; /* skip the > */
-        }
-
-        if (*action == '$') {
-          num = DOLLAR_DOLLAR;
-          ++action;
-        } else {
-          num = atoi(action);
-          if (*action == '-') {
-            ++action;
-          }
-          while (isdigit(*action)) {
-            ++action;
-          }
-        }
-      }
-
-      output("%s", do_dollar(num, rhs_size, lineno, prod, fname));
-    }
-  }
-  output("\n  break;\n");
 }
-

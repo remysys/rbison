@@ -4,10 +4,14 @@
 #include "parser.h"
 
 /* 
- * llpar.c:	a recursive-descent parser for a very stripped down rbison.
+ * llparser.c:	a recursive-descent parser for a very stripped down rbison.
  * there's a rbison input specification for a table-driven parser
- * in parser.l
+ * in parser.y
  */
+
+extern int yylineno;  /* created by rlex */
+extern char *yytext;
+extern int yylex(void);
 
 
 int yynerrs; /* total error count*/
@@ -45,19 +49,6 @@ static void lookfor(int first, ...)
 
 }
 
-/* the parser itself */
-
-
-int yyparse(void)  /* spec : definitions body stuff */
-{
-  extern int yylineno;
-  Lookahead = yylex(); /* get first input symbol */
-  definitions();
-  first_sym();
-  body();
-  return 0;
-}
-
 static void definitions()
 {
   /* implemented at:
@@ -67,7 +58,7 @@ static void definitions()
    *        | _EOI_                               3
    * tnames : NAME {make_term} tnames             4
    *
-   * note that relx copies the CODE_BLOCK contents to the output file
+   * note that rlex copies the CODE_BLOCK contents to the output file
    * automatically on reading it.
    */
   while (!match(SEPARATOR) && !match(_EOI_)) { /* 3 */
@@ -84,6 +75,45 @@ static void definitions()
   }
 
   advance(); /* advance past the %% */
+}
+
+void rhs()
+{
+  /* rhs : NAME {add_to_rhs} rhs 
+   *     | ACTION {add_to_rhs} rhs  
+   */
+  while (match(NAME) || match(ACTION)) {
+    add_to_rhs(yytext, match(ACTION) ? start_action() : 0);
+    advance();
+  }
+
+  if (!match(OR) && !match(SEMI)) {
+    lerror(NONFATAL, "illegal <%s>, ignoring rest of production\n", yytext);
+    lookfor(SEMI, SEPARATOR, OR, 0);
+  }
+}
+
+void right_side()
+{
+/* 
+ * right_sides : {new_rhs} rhs OR right_sides 1
+ *    | {new_rhs} rhs SEMI				            2
+ */
+
+  new_rhs();
+  rhs();
+
+  while (match(OR)) {
+    advance();
+    new_rhs();
+    rhs();
+  }
+
+  if (match(SEMI)) {
+    advance();
+  } else {
+    lerror(NONFATAL, "inserted missing semicolon\n");
+  }
 }
 
 void body()
@@ -124,41 +154,14 @@ void body()
   }
 }
 
-void right_side()
+/* the parser itself */
+
+int yyparse(void)  /* spec : definitions body stuff */
 {
-/* 
- * right_sides : {new_rhs} rhs OR right_sides 1
- *    | {new_rhs} rhs SEMI				            2
- */
-
-  new_rhs();
-  rhs();
-
-  while (match(OR)) {
-    advance();
-    new_rhs();
-    rhs();
-  }
-
-  if (match(SEMI)) {
-    advance();
-  } else {
-    lerror(NONFATAL, "inserted missing semicolon\n");
-  }
-}
-
-void rhs()
-{
-  /* rhs : NAME {add_to_rhs} rhs 
-   *     | ACTION {add_to_rhs} rhs  
-   */
-  while (match(NAME) || match(ACTION)) {
-    add_to_rhs(yytext, match(ACTION) ? start_action() : 0);
-    advance();
-  }
-
-  if (!match(OR) && !match(SEMI)) {
-    lerror(NONFATAL, "illegal <%s>, ignoring rest of production\n", yytext);
-    lookfor(SEMI, SEPARATOR, OR, 0);
-  }
+  extern int yylineno;
+  Lookahead = yylex(); /* get first input symbol */
+  definitions();
+  first_sym();
+  body();
+  return 0;
 }

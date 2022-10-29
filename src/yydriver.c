@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "parser.h"
 
-static FILE *Driver_file = stderr;
+static FILE *Driver_file;
 
 static FILE *Input_file = NULL;        /* rbison.par default */
 static int Input_line;                 /* line number of most-recently read line */
@@ -88,8 +88,8 @@ void file_header()
     output("#define YYPARSER\n");
   }
 
-  if (!(Driver_file = driver_1(Output, !No_lines, Template))) {
-    error(NONFATAL, "%s not found--output file won't compile\n", Template);
+  if (!(Driver_file = driver_1(Output, !No_lines))) {
+    error(NONFATAL, "rbison.par not found--output file won't compile\n");
   }
 
 }

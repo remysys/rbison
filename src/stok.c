@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "parser.h"
 
 void make_token_file()

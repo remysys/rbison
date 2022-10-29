@@ -16,7 +16,7 @@
  * table from the input specification.
  */
 
-/* prototypes for public functions are in parser.h *
+/* prototypes for public functions are in parser.h */
 
 extern int yylineno;  /* input line number --created by lex */
 
@@ -25,10 +25,8 @@ static int Goal_symbol_is_next = 0; /* if true, the next nonterminal is the goal
 
 static int Associativity;       /* current associativity direction */
 static int Prec_lev = 0;        /* precedence level. incremented after finding %left, etc. */
-static int fields_active = 0;   /* fields are used in the input. (if they're not, then automatic */
+static int Fields_active = 0;   /* fields are used in the input. (if they're not, then automatic */
                                 /* field-name generation, as per %union, is not activated */
-
-
 
 typedef struct _cur_sym_
 {
@@ -76,7 +74,7 @@ void pterm(SYMBOL *sym, FILE *stream)
   fprintf(stream, "%-16.16s  %3d    %2d   %c    <%s>\n",
         sym->name,
         sym->val,
-        Precedence[sym-val].level,
+        Precedence[sym->val].level,
         (i = Precedence[sym->val].assoc) ? i : '-',
         sym->field);
 }
@@ -122,7 +120,7 @@ void pnonterm(SYMBOL *sym, FILE *stream)
 {
   PRODUCTION *p;
   int chars_printed;
-  stack_cls(pstack, PRODUCTION *, MAXPROD);
+  stack_dcl(pstack, PRODUCTION *, MAXPROD);
   
   if (!ISNONTERM(sym)) {
     return;
@@ -234,6 +232,20 @@ void init_acts()
   Symtab = maketab(157, hash_pjw, strcmp);
 }
 
+static int c_identifier(char *name) /* return true only if name is a legitimate C identifier */
+{
+  if (isdigit(*name)) {
+    return 0;
+  }
+
+  for (; *name; ++name) {
+    if (!(isalnum(*name) || *name == '_')) {
+      return 0;
+    }
+  }
+
+  return 1;
+}
 
 SYMBOL *make_term(char *name)   /* make a terminal symbol */
 {
@@ -260,22 +272,6 @@ SYMBOL *make_term(char *name)   /* make a terminal symbol */
   return p;
 }
 
-
-static bool c_identifier(char *name) /* return true only if name is a legitimate C identifier */
-{
-  if (isdigit(*name)) {
-    return false;
-  }
-
-  for (; *name; ++name) {
-    if (!(isalnum(*name) || *name == '_')) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void first_sym()
 {
   /* this routine is called just before the first rule following the %%
@@ -297,7 +293,7 @@ SYMBOL *new_nonterm(char *name, int is_lhs)
  */
   SYMBOL *p;
 
-  if (p = (SYMBOL) findsym(Symtab, name)) {
+  if (p = (SYMBOL *) findsym(Symtab, name)) {
     if (!ISNONTERM(p)) {
       lerror(NONFATAL, "symbol on left-hand side must be nonterminal\n");
       p = NULL;
@@ -325,7 +321,7 @@ SYMBOL *new_nonterm(char *name, int is_lhs)
     p->lineno = yylineno;
 
     if (is_lhs) {
-      strncpy(p_cur_sym, name, NAME_MAX);
+      strncpy(p_cur_sym->lhs_name, name, NAME_MAX);
       p_cur_sym->lhs = p;
       p_cur_sym->rhs = NULL;
       p_cur_sym->lhs->set = yylineno;
@@ -362,7 +358,7 @@ void new_rhs()
 
 
 /*
- * is_an_action: 0 of not an action, line number otherwise */
+ * is_an_action: 0 of not an action, line number otherwise
  */
 
 void add_to_rhs(char *object, int is_an_action) 

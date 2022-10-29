@@ -1,22 +1,13 @@
+#include <stdio.h>
 #include <set.h>
 #include <hash.h>
-#include <parser.h>
-
+#include "parser.h"
 
 /* 
  * first.c compute FIRST sets for all productions in a symbol table.
  */
 
 static int diff;
-
-void first()
-{
-  /* construct FIRST sets for all nonterminal symbols in the symbol table */
-  do {
-    diff = 0;
-    ptab(Symtab, (ptab_t)first_closure, NULL, 0);
-  } while (diff);
-}
 
 void first_closure(SYMBOL *lhs)
 {
@@ -78,8 +69,14 @@ void first_closure(SYMBOL *lhs)
   }
 }
 
-
-
+void first()
+{
+  /* construct FIRST sets for all nonterminal symbols in the symbol table */
+  do {
+    diff = 0;
+    ptab(Symtab, (ptab_t)first_closure, NULL, 0);
+  } while (diff);
+}
 
 int first_rhs(SET *dest, SYMBOL **rhs, int len)
 {

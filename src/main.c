@@ -1,7 +1,10 @@
-#include <stdarg.h>
-#include <stdio.h>
-#include <signal.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <errno.h>
+#include <sys/time.h>
 
 #	define  ALLOCATE
 #	include "parser.h"
@@ -9,11 +12,10 @@
 
 static int Warn_exit        = 0;      /* set to 1 if -W on command line */
 static int Num_warnings     = 0;      /* total warnings printed */
-static char *Output_fname   = "????"  /* name of the output file */
+static char *Output_fname   = "????";  /* name of the output file */
 static FILE *Doc_file       = NULL;   /* error log & machine description */
 
-
-#define VERBOSE(str) if (Verbose) { printf("%s:\n", (str));} else 
+#define VERSION "0.01 [gcc 4.8.5]"
 
 
 /*
@@ -36,62 +38,93 @@ void onintr(int signum) /* SIGINT (ctrl-break, ^C) hanlder */
   exit(EXIT_USR_ABRT);
 }
 
-
-int main(int argc, char *argv[])
+void signon()
 {
-  signon();                               /* print sign on message */
-  signal(SIGINT, onintr);  /* close output files on ctrl-break */
-  parse_args(argc, argv);
-
-  if (Make_parser) {
-    if (Verbose == 1) {
-      if (!(Doc_file = fopen(DOC_FILE, "w"))) {
-        ferr("can't open log file %s\n", DOC_FILE);
-      }
-    } else if (Verbose > 1) {
-      Doc_file = stderr;
-    }
-  }
-
-  if (Use_stdout) {
-    Output_fname = "/dev/tty";
-    Output = stdout;
-  } else {
-    Output_fname = !Make_parser ? ACT_FILE : PARSE_FILE;
-    if (!(Output = fopen(Output_fname, "w"))) {
-      error(FATAL, "can't open output file %s : %s\n", Output_fname, strerror(errno));
-    }
-  }
-
-  if ((yynerrs = do_file()) == 0) { /* do all the work */
-    if (Symbols) {
-      symbols(); /* print the symbol table */
-    }
-
-    statistics(stdout); /* and any closing-up statistics */
-    
-    if (Verbose && Doc_file) {
-      statistics(Doc_file);
-    }
-  } else {
-    if (Output != stdout) {
-      fclose(Output);
-      if (unlink(Output_fname) == -1) {
-        perror(Output_fname);
-      }
-    }
-  }
-
-  /* exit with  the number of hard errors (or, if -W was specified, the sum
-   * of the hard errors and warnings) as an exit status. Doc_file and Output
-   * are closed implicitly by exit()
+  /* print the sign-on message. since the console is opened explicitly, the
+   * message is printed even if both stdout and stderr are redirected.
    */
-  
-  exit(yynerrs + (Warn_exit ? Num_warnings : 0));
-  
-  return 0;
+  FILE *screen;
+  if (!(screen = fopen("/dev/tty", "w"))) {
+    screen = stderr;
+  }
+
+  fprintf(screen, "rbison %s [%s]. (c) %s, ****.", VERSION, __DATE__,  __DATE__ + 7);
+  fprintf(screen," all rights reserved.\n");
+
+  if (screen != stderr) {
+    fclose(screen);
+  }
 }
 
+void lerror(int fatal, char *fmt, ...)
+{
+  /* this error-processing routine automatically generates a line number for
+   * the error. If "fatal" is true, exit() is called.
+   */
+  
+  va_list args;
+  extern int yylineno;
+  if (fatal == WARNING) {
+    ++Num_warnings;
+    if (No_warnings) {
+      return;
+    }
+    fprintf(stdout, "%s WARNING (%s, line %d): ", PROG_NAME, Input_file_name, yylineno);
+  } else if (fatal != NOHDR) {
+    ++yynerrs;
+    fprintf(stdout, "%s ERROR (%s, line %d): ", PROG_NAME, Input_file_name, yylineno);
+  }
+
+  va_start(args, fmt);
+  vfprintf(stdout, fmt, args);
+  fflush(stdout);
+  
+  if (Verbose && Doc_file) {
+    if (fatal != NOHDR) {
+      fprintf(Doc_file, "%s (line %d) ", fatal == WARNING ? "WARNING" : "ERROR", yylineno);
+      vfprintf(Doc_file, fmt, args);
+    }
+  }
+
+  if (fatal == FATAL) {
+    exit(EXIT_OTHER);
+  }
+}
+
+void error(int fatal, char *fmt, ...)
+{
+  /* this error routine works like lerror() except that no line number is
+   * generated. the global error count is still modified, however.
+   */
+
+  va_list args;
+  char *type;
+  if (fatal == WARNING) {
+    ++Num_warnings;
+    if (No_warnings) {
+      return;
+    }
+    type = "WARNING: ";
+    fprintf(stdout, type);
+  } else if (fatal != NOHDR) { /* if NOHDR is true. just act like printf*/
+    ++yynerrs;
+    type = "ERROR: ";
+    fprintf(stdout, type);
+  }
+
+  va_start(args, fmt);
+  vfprintf(stdout, fmt, args);
+  fflush(stdout);
+
+  if (Verbose && Doc_file) {
+    fprintf(Doc_file, type);
+    vfprintf(Doc_file, fmt, args);
+  }
+
+  if (fatal == FATAL) {
+    exit(EXIT_OTHER);
+  }
+}
 
 void parse_args(int argc, char *argv[])
 {
@@ -166,55 +199,6 @@ void parse_args(int argc, char *argv[])
   }
 }
 
-
-int do_file()
-{
-  /* process the input file. return the number of errors */
-  struct timeb start_time, end_time;
-  long time;
-
-  ftime(&start_time);     /* initialize times now so that the difference */
-  end_time = start_time;  /* between times will be 0 if we don't build the tables */
-
-  init_acts();
-  file_header();
-
-  VERBOSE("parsing");
-
-  nows();     /* make lex ignore white space until ws() is called */
-  yyparse();  /* parse the entire input file */
-  if (!yynerrs || problems()) { /* if no problems in the input file */
-    VERBOSE("analyzing grammar");
-    first();        /* find FIRST sets */
-    code_header();  /* print various #define to output file */
-    patch();        /* patch up the grammar and output the actions */  
-    
-    ftime(&start_time);
-    if (Make_parser) {
-      VERBOSE("make tables");
-      tables();     /* generate the tables */
-    }
-
-    ftime(&end_time);
-    VERBOSE("copying driver");
-    
-    driver();     /* the parser */
-    
-    if (Make_actions) {
-      tail();     /* and the tail end of the source file */
-    }
-  }
-
-  if (Verbose) {
-    time  = (end_time.time * 1000) + end_time.millitm;
-    time -= (start_time.time * 1000) + start_time.millitm;
-    printf("time required to make tables: %ld.%-03ld seconds\n", (time/1000), (time%1000));
-  }
-
-  return yynerrs;
-}
-
-
 void symbols()  /* print the symbol table */
 {
   FILE *fd;
@@ -234,9 +218,9 @@ void statistics(FILE *fp)
   
   if (Verbose) {
     fprintf(fp, "\n");
-    fprintf(fp, "%4d/%-4d", terminals\n,    USED_TERMS, NUMTERMS);
-    fprintf(fp, "%4d/%-4d", nonterminals\n, USED_NONTERMS, NUMNONTERMS);
-    fprintf(fp, "%4d/%-4d", productions\n,  Num_productions, MAXPROD);
+    fprintf(fp, "%4d/%-4d terminals\n",    USED_TERMS, NUMTERMS);
+    fprintf(fp, "%4d/%-4d nonterminals\n", USED_NONTERMS, NUMNONTERMS);
+    fprintf(fp, "%4d/%-4d productions\n",  Num_productions, MAXPROD);
     lr_stats(fp);
   }
 
@@ -295,78 +279,6 @@ void document_to(FILE *fp)
     Doc_file = oldfp;
   }
 }
-
-
-void lerror(int fatal, char *fmt, ...)
-{
-  /* this error-processing routine automatically generates a line number for
-   * the error. If "fatal" is true, exit() is called.
-   */
-  
-  va_list args;
-  extern int yylineno;
-  if (fatal == WARNING) {
-    ++Num_warnings;
-    if (No_warnings) {
-      return;
-    }
-    fprintf(stdout, "%s WARNING (%s, line %d): ", PROG_NAME, Input_file_name, yylineno);
-  } else if (fatal != NOHDR) {
-    ++yynerrs;
-    fprintf(stdout, "%s ERROR (%s, line %d): ", PROG_NAME, Input_file_name, yylineno);
-  }
-
-  va_start(args, fmt);
-  vfprintf(stdout, fmt, args);
-  fflush(stdout);
-  
-  if (Verbose && Doc_file) {
-    if (fatal != NOHDR) {
-      fprintf(Doc_file, "%s (line %d) ", fatal == WARNING ? "WARNING" : "ERROR", yylineno);
-      vfprintf(Doc_file, fmt, args);
-    }
-  }
-
-  if (fatal == FATAL) {
-    exit(EXIT_OTHER);
-  }
-}
-
-void error(int fatal, char *fmt, ...)
-{
-  /* this error routine works like lerror() except that no line number is
-   * generated. the global error count is still modified, however.
-   */
-
-  va_list args;
-  char *type;
-  if (fatal == WARNING) {
-    ++Num_warnings;
-    if (No_warnings) {
-      return;
-    }
-    type = "WARNING: ";
-    fprintf(stdout, type);
-  } else if (fatal != NOHDR) { /* if NOHDR is true. just act like printf*/
-    ++yynerrs;
-    type = "ERROR: ";
-    fprintf(stdout, type);
-  }
-
-  va_start(args, fmt);
-  vfprintf(stdout, fmt, args);
-  fflush(stdout);
-
-  if (Verbose && Doc_file) {
-    fprintf(Doc_file, type);
-    vfprintf(Doc_file, fmt, args);
-  }
-
-  if (fatal == FATAL) {
-    exit(EXIT_OTHER);
-  }
-}
-
 
 static void tail()
 {
@@ -432,4 +344,107 @@ static void tail()
 	    outc(c);
     }
   }
+}
+
+int do_file()
+{
+  /* process the input file. return the number of errors */
+
+  struct timeval start_time, end_time;
+  long time;
+   
+  gettimeofday(&start_time, NULL); /* initialize times now so that the difference */
+  end_time = start_time;           /* between times will be 0 if we don't build the tables */
+
+  init_acts();
+  file_header();
+
+  VERBOSE("parsing");
+
+  nows();     /* make lex ignore white space until ws() is called */
+  yyparse();  /* parse the entire input file */
+  if (!yynerrs || problems()) { /* if no problems in the input file */
+    VERBOSE("analyzing grammar");
+    first();        /* find FIRST sets */
+    code_header();  /* print various #define to output file */
+    patch();        /* patch up the grammar and output the actions */  
+    
+    ftime(&start_time);
+    if (Make_parser) {
+      VERBOSE("make tables");
+      tables();     /* generate the tables */
+    }
+
+    gettimeofday(&end_time, NULL);
+    VERBOSE("copying driver");
+    
+    driver();     /* the parser */
+    
+    if (Make_actions) {
+      tail();     /* and the tail end of the source file */
+    }
+  }
+
+  if (Verbose) {
+    time = (end_time.tv_sec * 1000000) + end_time.tv_usec;
+    time -= (start_time.tv_sec * 1000000) + start_time.tv_usec;
+    printf("time required to make tables: %ld.%-03ld seconds\n", (time/1000000), (time%1000000)/1000);
+  }
+
+  return yynerrs;
+}
+
+int main(int argc, char *argv[])
+{
+  signon();                /* print sign on message */
+  signal(SIGINT, onintr);  /* close output files on ctrl-break */
+  parse_args(argc, argv);
+
+  if (Make_parser) {
+    if (Verbose == 1) {
+      if (!(Doc_file = fopen(DOC_FILE, "w"))) {
+        ferr("can't open log file %s\n", DOC_FILE);
+      }
+    } else if (Verbose > 1) {
+      Doc_file = stderr;
+    }
+  }
+
+  if (Use_stdout) {
+    Output_fname = "/dev/tty";
+    Output = stdout;
+  } else {
+    Output_fname = !Make_parser ? ACT_FILE : PARSE_FILE;
+    if (!(Output = fopen(Output_fname, "w"))) {
+      error(FATAL, "can't open output file %s : %s\n", Output_fname, strerror(errno));
+    }
+  }
+
+  if ((yynerrs = do_file()) == 0) { /* do all the work */
+    if (Symbols) {
+      symbols(); /* print the symbol table */
+    }
+
+    statistics(stdout); /* and any closing-up statistics */
+    
+    if (Verbose && Doc_file) {
+      statistics(Doc_file);
+    }
+  } else {
+    if (Output != stdout) {
+      fclose(Output);
+      if (unlink(Output_fname) == -1) {
+        perror(Output_fname);
+      }
+    }
+  }
+
+  /* exit with  the number of hard errors (or, if -W was specified, the sum
+   * of the hard errors and warnings) as an exit status. Doc_file and Output
+   * are closed implicitly by exit()
+   */
+  
+  exit(yynerrs + (Warn_exit ? Num_warnings : 0));
+  
+  return 0;
 }

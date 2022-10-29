@@ -148,7 +148,7 @@ CLASS int Make_parser       I( = 1 );         /* == 0 if -a on command line */
 CLASS int Make_yyoutab      I( = 0 );         /* == 1 if -T on command line */
 CLASS int No_lines          I( = 0 );         /* suppress #lines in output */ 
 CLASS int No_warnings       I( = 0 );         /* suppress warnings if true */
-CLASS FILE *Output          I( = stdout );    /* Output stream */
+CLASS FILE *Output;                           /* Output stream */
 CLASS int Public            I( = 0 );         /* make static symbols public */
 CLASS int Symbols           I( = 0 );         /* generate symbol table */
 CLASS int Threshold         I( = 4 );         /* compression threshold */
@@ -211,5 +211,38 @@ void print_symbols(FILE *stream);                     /* acts.c */
 void print_tok(FILE *stream, char *format, int arg);  /* acts.c */
 void pterm(SYMBOL *sym, FILE *stream);                /* acts.c */
 void union_def(char *action);                         /* acts.c */
+
+
+int start_action(void); /* from lexical analyzer (parser.l) */
+
+char *do_dollar(int num, int rhs_size, int lineno, PRODUCTION *prod, char *fname); /* yydollar.c */
+
+void document(char *fmt, ...);          /* main.c */
+void document_to(FILE *fp);             /* main.c */
+void error(int fatal, char *fmt, ...);  /* main.c */
+void lerror(int fatal, char *fmt, ...); /* main.c */
+char *open_errmsg(void);                /* main.c */
+void output(char *fmt, ...);            /* main.c */
+
+void driver(void);        /* yydriver.c */
+void file_header(void);   /* yydriver.c */
+void code_header(void);   /* yydriver.c */
+
+void first(void);                                 /* first.c */
+int first_rhs(SET* dest, SYMBOL **rhs, int len);  /* first.c */
+
+
+int lr_conflicts(FILE *fp);   /* yystate.c */
+void lr_stats(FILE *fp);       /* yystate.c */
+void make_parse_tables(void); /* yystate.c */
+
+void make_token_file(void);   /* stok.c */
+void make_yy_stok(void);      /* stok.c */
+
+
+void patch(void);   /* yypatch.c */
+void tbales(void);  /* yycode.c */
+int yyparse(void);  /* llpar.c */
+  
 #endif
  

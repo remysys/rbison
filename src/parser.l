@@ -15,16 +15,15 @@
  * if Ignore. If Ignore is true, white space is ignored.
  */
 
-static int Ignore = 0;
-int No_lines = 0;
-char *Input_file_name;
+static int Ignore = 0; 
+static int Start_line; /* starting line number */
 
 /* 
  * prototypes for functions at the bottom of this file: 
  */
 
-void nows(void);            /* ignore white space, etc */
-void ws(void);              /* don't ignore white space, etc */
+void nows(void);                            /* ignore white space, etc */
+void ws(void);                              /* don't ignore white space, etc */
 void lerror(int status, char *fmt, ...);
 void output(char *fmt, ...);
 %}
@@ -70,18 +69,18 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
       in_string = 0;
       in_char_const = 0;
       in_comment = 0;
-      int start = yylineno;
+      Start_line = yylineno;
 
       for (nestlev = 1; i = input(); lb2 = lb1, lb1 = i) {
         if (lb2 == '\n' && lb1 == '%' && i == '%') {
-          lerror(FATAL, "%%%% in code block starting on line %d\n", start);
+          lerror(FATAL, "%%%% in code block starting on line %d\n", Start_line);
         }
 
         if (i < 0) {
           ii_unterm();
           ii_flush(1);
           ii_term();
-          lerror(FATAL, "code block starting on line %d too long\n", start);
+          lerror(FATAL, "code block starting on line %d too long\n", Start_line);
         }
 
         if (i == '\n' && in_string) {
@@ -120,7 +119,7 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
         }
       }
 
-      lerror(FATAL, "eof in code block starting on line %d\n", start);
+      lerror(FATAL, "eof in code block starting on line %d\n", Start_line);
     }
 
 ^"%%"	return SEPARATOR;
@@ -128,7 +127,7 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
 "%{"[\s\t]* {
               /* copy a code block to the output file */
               int c, looking_for_brace = 0;
-              #undef output 	/* replace macro with function in main.c */
+              #undef output /* replace macro with function in main.c */
               if (!No_lines) {
                 output("\n#line %d \"%s\"\n", yylineno, Input_file_name);
               }
@@ -180,8 +179,15 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
 void nows() { Ignore = 1; }   /* ignore white space */
 void ws() { Ignore = 0; }     /* don't ignore white space */ 
 
+int start_action() /* return starting line number of most recently read ACTION block */
+{
+  return Start_line;
+}
+
 #ifdef MAIN	/* test routine,  reads lexemes and prints them */
 
+int No_lines = 0;
+char *Input_file_name;
 FILE *Output;
 
 #include <stdarg.h>
@@ -216,7 +222,6 @@ int main(int argc, char *argv[])
   Output = stdout;
   nows();
 
-  
   if (1 == argc) {
     while(lex = yylex()) {
       plex(lex);

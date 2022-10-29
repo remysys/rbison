@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <string.h>
 #include "parser.h"
 
 char *do_dollar(int num, int rhs_size, int lineno, PRODUCTION *prod, char *fname)
@@ -13,7 +15,7 @@ char *do_dollar(int num, int rhs_size, int lineno, PRODUCTION *prod, char *fname
   int i, len;
 
   if (num == DOLLAR_DOLLAR) { /* Do $$ */
-    strcpy(buf + 6, ".%s", fname);
+    strcpy(buf, "Yy_val");
     
     if (*fname) {  /* $<name>N */
       sprintf(buf + 6, ".%s", fname);
@@ -40,7 +42,7 @@ char *do_dollar(int num, int rhs_size, int lineno, PRODUCTION *prod, char *fname
         len = sprintf(buf, "yyvsp[%d]", i);
 
         if (*fname) { /* $<name>N */
-          sprintf(buf + len. ".%s", fname);
+          sprintf(buf + len, ".%s", fname);
         } else if (fields_active()) {
           if (num <= 0) {
             error(NONFATAL, "can't use %%union field with negative");

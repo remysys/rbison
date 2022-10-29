@@ -12,7 +12,7 @@
                     = stack + (size)
 
 #define stack_clear(stack) ((p_##stack) = (stack + sizeof(stack)/sizeof(*stack)))
-#define stack_full(stack) ((p_##stack) <= stack);
+#define stack_full(stack) ((p_##stack) <= stack)
 #define stack_empty(stack) ((p_##stack) >= (stack + sizeof(stack)/sizeof(*stack)))
 #define stack_ele(stack) ((sizeof(stack)/sizeof(*stack)) - (p_##stack - stack))
 #define stack_item(stack, offset) (*(p_##stack + (offset)))
@@ -23,6 +23,6 @@
 #define pop(stack) (stack_empty(stack) ? ((t_##stack)(long)(stack_err(0))) : pop_(stack))
 #define popn_(stack, amt) ((p_##stack) += amt)[-amt])
 #define popn(stack, amt) ((stack_ele(stack) < amt) ? ((t_##stack)(long)(stack_err(0))) : popn_(stack, amt))
-#define stack_err(overflow) ((overflow) ? ferr("stack overflow"\n) : ferr("stack underflow"))
+#define stack_err(overflow) ((overflow) ? ferr("stack overflow\n") : ferr("stack underflow\n"))
 #endif
 
