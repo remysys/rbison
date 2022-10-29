@@ -3,6 +3,7 @@
 #include <string.h>
 #include <set.h>
 #include <hash.h>
+#include <compiler.h>
 #include "parser.h"
 #include "llout.h"			/* for _EOI_ definition */
 
@@ -661,7 +662,7 @@ static int move_eps(STATE *cur_state, ITEM **closure_items, int nclose)
 }
 
 
-static int kclose(STATE *kernel, ITEM **closure_items, int maxitems, int nclose)
+static int kclosure(STATE *kernel, ITEM **closure_items, int maxitems, int nclose)
 {
   /* kernel: kernel state to close 
    * closure_items: array into which closure items are put
@@ -1119,7 +1120,7 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
     }
 
     for (p = elep + 1, j = i + 1; j < Nstates; ++p, ++j) {
-      if (MEMEBR(redundant, j)) {
+      if (MEMBER(redundant, j)) {
         continue;
       }
 

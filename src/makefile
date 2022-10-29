@@ -9,7 +9,7 @@ lib:
 	make -C ../lib
 
 rbison: llparser.o $(OBJS) lib
-	$(CC) -o $@ $(OBJS) ../lib/libcomp.a -llex
+	$(CC) -o $@ $(OBJS) llparser.o ../lib/libcomp.a -llex
 
 
 test: lex.yy.c
@@ -18,7 +18,9 @@ test: lex.yy.c
 clean:
 	rm -fr *.o
 	rm -fr lex.yy.c
+	rm -fr rbison
 	rm -fr parser
+
 	make -C ../lib clean
 
 yypatch.o:	yypatch.c   parser.h

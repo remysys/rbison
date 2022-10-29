@@ -17,6 +17,7 @@ static FILE *Doc_file       = NULL;   /* error log & machine description */
 
 #define VERSION "0.01 [gcc 4.8.5]"
 
+#define VERBOSE(str)  if (Verbose) { printf( "%s:\n", (str)); } else
 
 /*
  * subroutine: 

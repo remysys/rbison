@@ -4,7 +4,7 @@
 #include "parser.h"
 
 /* 
- * llparser.c:	a recursive-descent parser for a very stripped down rbison.
+ * llparser.c:	a recursive-descent parser for a very simple rbison.
  * there's a rbison input specification for a table-driven parser
  * in parser.y
  */

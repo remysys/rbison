@@ -6,7 +6,7 @@ CFLAGS = -I$(INCLUDE)
 
 .PHONY: all clean
 
-COMP_OBJ = escape.o ferr.o fputstr.o hash.o set.o
+COMP_OBJ = escape.o ferr.o fputstr.o hash.o set.o printv.o
 
 all: $(LIBCOMP)
 
@@ -23,6 +23,7 @@ ferr.o: 		ferr.c
 fputstr.o: 	fputstr.c
 hash.o: 		hash.c
 set.o: 			set.c
+printv.o:		printv.c
 
 clean:
 	rm -fr $(COMP_OBJ) $(LIBCOMP)
