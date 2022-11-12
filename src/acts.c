@@ -106,8 +106,7 @@ char *production_str(PRODUCTION *prod)
     sprintf(p, " (epsilon)");
   } else {
     for (i = 0; i < prod->rhs_len && avail > 0; i++) {
-      // nchars = sprintf(p, " %0.*s", avail - 1, prod->rhs[i]->name);
-      nchars = snprintf(p, avail, "%s", prod->rhs[i]->name);
+      nchars = sprintf(p, " %0.*s", avail - 1, prod->rhs[i]->name);
       avail -= nchars;
       p += nchars;
     }
@@ -131,7 +130,7 @@ void pnonterm(SYMBOL *sym, FILE *stream)
 
   fprintf(stream, " <%s>\n", sym->field);
 
-  if (Symbols > 1) {
+  if (Symbols > 0) {
     /* print first sets only if you want really verbose output */
     fprintf(stream, "  FIRST: ");
     pset(sym->first, (pset_t)print_tok, stream);
@@ -187,12 +186,10 @@ void print_symbols(FILE *stream)
   }
 }
 
-
 /*
  * problems() and find_problems work together to find unused symbols and
  * symbols that are used but not defined.
  */
-
 
 void find_problems(SYMBOL *sym) 
 {
@@ -368,7 +365,7 @@ void add_to_rhs(char *object, int is_an_action)
   char buf[32];
 
   /* add a new element to the RHS currently nonterminal symbol. first deal with
-   * forward references. ff the item isn't in the table, add it. note that,
+   * forward references. if the item isn't in the table, add it. note that,
    * since terminal symbols must be declared with a %term directive, forward
    * references always refer to nonterminals or action items. when we exit the
    * if statement, p points at the symbol table entry for the current object.
@@ -397,13 +394,13 @@ void add_to_rhs(char *object, int is_an_action)
       p->lineno = is_an_action;
 
       if (!(p->string = strdup(object))) {
-        lerror(FATAL, "insufficient memory to save action\n");
+        lerror(FATAL, "no memory to save action\n");
       }
     }
   }
 
   p->used = yylineno;
-  if ((i = p_cur_sym->rhs->rhs_len) >= MAXRHS) {
+  if ((i = p_cur_sym->rhs->rhs_len++) >= MAXRHS) {
     lerror(NONFATAL, "right-hand side too long (%d max)\n", MAXRHS);
   } else {
     if (ISTERM(p)) {
@@ -504,7 +501,6 @@ int fields_active(void)
 {
   return Fields_active; /* previous %union was specified */
 }
-
 
 void new_field(char *field_name)
 {

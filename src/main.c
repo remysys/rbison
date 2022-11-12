@@ -12,7 +12,7 @@
 
 static int Warn_exit        = 0;      /* set to 1 if -W on command line */
 static int Num_warnings     = 0;      /* total warnings printed */
-static char *Output_fname   = "????";  /* name of the output file */
+static char *Output_fname   = "????"; /* name of the output file */
 static FILE *Doc_file       = NULL;   /* error log & machine description */
 
 #define VERSION "0.01 [gcc 4.8.5]"
@@ -309,39 +309,7 @@ static void tail()
     if (c == -1) {
       ii_flush(1);
       continue;
-    } else if (c == '$') {
-      ii_mark_start();
-      if ((c = ii_advance()) != '<') {
-        *fname = '\0';
-      } else {  /* extract name in $<foo>1 */
-        p = fname;
-        for (i = sizeof(fname); (--i > 0) && (c = ii_advance()) != '>';) {
-          *p++ = c;
-        }
-        *p++ = '\0';
-        if (c == '>') {     /*truncate name if necessary */
-          c = ii_advance();
-        }
-      }
-
-      if (c == '$') {
-        output(do_dollar(DOLLAR_DOLLAR, -1, 0, NULL, fname));
-      } else {
-        if (c != '-') {
-          sign = 1;
-        } else {
-          sign = -1;
-          c = ii_advance();
-        }
-
-        for (i = 0; isdigit(c); c = ii_advance()) {
-          i = (i * 10) + (c - '0');
-        }
-        
-        ii_pushback(1);
-        output(do_dollar(i*sign, -1, ii_lineno(), NULL, fname));
-      }
-    } else if (c != '\r') {
+    } else {
 	    outc(c);
     }
   }
@@ -364,6 +332,7 @@ int do_file()
 
   nows();     /* make lex ignore white space until ws() is called */
   yyparse();  /* parse the entire input file */
+  
   if (!yynerrs || problems()) { /* if no problems in the input file */
     VERBOSE("analyzing grammar");
     first();        /* find FIRST sets */
@@ -371,6 +340,7 @@ int do_file()
     patch();        /* patch up the grammar and output the actions */  
     
     ftime(&start_time);
+
     if (Make_parser) {
       VERBOSE("make tables");
       tables();     /* generate the tables */
@@ -394,6 +364,7 @@ int do_file()
 
   return yynerrs;
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -449,3 +420,17 @@ int main(int argc, char *argv[])
   
   return 0;
 }
+
+#ifdef NEVER 
+int main(int argc, char *argv[]) {
+  Output = stdout;
+  init_acts();
+  if (ii_newfile(argv[1]) < 0) {
+      perror(argv[1]);
+      return -1;
+  }
+  //nows();
+  yyparse();
+  print_symbols(stdout);
+}
+#endif

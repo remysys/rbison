@@ -2,7 +2,6 @@ INCLUDE = ../include
 CC = gcc
 CFLAGS = -I$(INCLUDE) -g
 
-
 OBJS = main.o acts.o lex.yy.o first.o stok.o yypatch.o yycode.o yydriver.o yystate.o yydollar.o
 
 lib:
@@ -20,15 +19,18 @@ clean:
 	rm -fr lex.yy.c
 	rm -fr rbison
 	rm -fr parser
-
+	rm -fr yyout.h
+	rm -fr yyout.c
+	rm -fr yyout.doc
+	rm -fr yyout.sym
 	make -C ../lib clean
 
-yypatch.o:	yypatch.c   parser.h
-yycode.o:		yycode.c   	parser.h
-yydriver.o:	yydriver.c 	parser.h
-yystate.o:	yystate.c  	parser.h
-yydollar.o:	yydollar.c 	parser.h
-llparser.o: llparser.c 	parser.h
-lex.yy.o: 	lex.yy.c		parser.h
-lex.yy.c: 	parser.l
+yypatch.o:	yypatch.c	parser.h
+yycode.o:	yycode.c	parser.h
+yydriver.o:	yydriver.c	parser.h
+yystate.o:	yystate.c	parser.h
+yydollar.o:	yydollar.c	parser.h
+llparser.o:	llparser.c	parser.h
+lex.yy.o:	lex.yy.c	parser.h
+lex.yy.c:	parser.l
 	rlex -vl parser.l

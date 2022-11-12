@@ -89,18 +89,18 @@ static void print_one_case(int case_val, char *action, int rhs_size, int lineno,
         if (*action == '>') {
           ++action; /* skip the > */
         }
+      }
 
-        if (*action == '$') {
-          num = DOLLAR_DOLLAR;
+      if (*action == '$') {
+        num = DOLLAR_DOLLAR;
+        ++action;
+      } else {
+        num = atoi(action);
+        if (*action == '-') {
           ++action;
-        } else {
-          num = atoi(action);
-          if (*action == '-') {
-            ++action;
-          }
-          while (isdigit(*action)) {
-            ++action;
-          }
+        }
+        while (isdigit(*action)) {
+          ++action;
         }
       }
 
@@ -190,10 +190,7 @@ static void dopatch(SYMBOL *sym)
         cur->productions->prec = 0;
 
         /* since the new production goes to epsilon and nothing else,
-		     * FIRST(new) == {epsilon}. don't bother to refigure the
-		     * follow sets because they won't be used in the LALR(1) state-
-		     * machine routines [if you really want them, call follow()
-		     * again]
+		     * FIRST(new) == {epsilon}
 		     */
         cur->first = newset();
         ADD(cur->first, EPSILON);

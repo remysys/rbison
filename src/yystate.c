@@ -502,13 +502,13 @@ static char *strprod(PRODUCTION *prod)
   char *bp;
   int i;
   bp = buf;
-  bp += sprintf(bp, "%s->", prod->lhs->name);
+  bp += sprintf(bp, "%s ->", prod->lhs->name);
 
   if (prod->rhs_len <= 0) {
-    bp += sprintf(bp, "<epsilon>");
+    bp += sprintf(bp, " <epsilon>");
   } else {
     for (i = 0; i < prod->rhs_len; i++) {
-      bp += sprintf(bp, "%s ", prod->rhs[i]->name);
+      bp += sprintf(bp, " %s", prod->rhs[i]->name);
     }
   }
 
@@ -536,7 +536,7 @@ static ITEM *newitem(PRODUCTION *production)
   }
   
   if (Verbose > 1) {
-    printf("making new item for %s", strprod(production));
+    printf("making new item for %s\n", strprod(production));
   }
 
   ++Nitems;
@@ -885,10 +885,11 @@ static void reduce_one_item(STATE *state, ITEM *item)
        */
       ++Reduce_reduce;
       reduce_by = min(-(ap->do_this), item->prod_num);
-      ap->do_this = -reduce_by;
+
       error(WARNING, "state %2d: reduce/reduce conflict ", state->num);
       error(NOHDR, "%d/%d on %s (choose %d)\n", -(ap->do_this), 
             item->prod_num, token ? Terms[token]->name : "<_EOI_>", reduce_by);
+      ap->do_this = -reduce_by;
     } else {
       /* shift/reduce conflict */
       if (resolved = (pprec && tprec)) {
@@ -1142,7 +1143,7 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
 		     * template pointer
 		     */
         ADD(redundant, j);
-        table[j] = *elep;
+        table[j] = elep;
       }
     }
   }
@@ -1164,15 +1165,15 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
     output("YYPRIVATE YY_TTYPE %s%03d[] = {%2d, ", row_name, (int) (elep - table), count);
 
     column = 0;
-    for (ele = *elep; ele; ele->next) {
+    for (ele = *elep; ele; ele = ele->next) {
       ++Npairs;
-      output("%3d,%-4d", ele->sym, ele->do_this);
+      output("%3d,%d", ele->sym, ele->do_this);
 
       if (++column != count) {
         outc(',');
       }
       if (column % 5 == 0) {
-        output("\n\t\t\t  ");
+        output("\n\t\t\t\t  ");
       }
     }
     output("};\n");
@@ -1184,21 +1185,20 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
     output("\nYY_TTYPE *%s[%d] = \n", col_name, Nstates);
   }
 
-  output("{\n/* 0 */");
+  output("{");
 
   for (elep = table, i = 0; i < Nstates; i++, elep++) {
+    if (i == 0 || (i % 8) == 0) {
+      output("\n/* %3d */ ", i);
+    }
     if (MEMBER(redundant, i)) {
-      output("%s%03d", row_name, (int)((ACT**)(*elep) - table));
+      output("%s%03d", row_name, (int)(((ACT**)(*elep)) - table));
     } else {
       output(*elep ? "%s%03d" : " NULL", row_name, i);
     }
 
     if (i != Nstates - 1) {
-      output(",");
-    }
-
-    if (i == 0 || (i % 8) == 0) {
-      output("\n/* %3d */ ", i + 1);
+      output(", ");
     }
   }
   output("\n};\n");
@@ -1418,12 +1418,11 @@ void make_parse_tables()
   ADD(item->lookaheads, _EOI_); /* end-of-input marker as a lookahead symbol */
 
   newstate(&item, 1, &state);
-
   if (lr(state)) {  /* add shifts and gotos to the table */
     if (Verbose) {
       printf("adding reductions:\n");
     }
-
+    
     reductions(); /* add the reductions */
     
     if (Verbose) {
@@ -1454,7 +1453,6 @@ void make_parse_tables()
         Output = old_output;
       }
     }
-
     print_reductions();
   }
 }

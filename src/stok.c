@@ -16,9 +16,9 @@ void make_token_file()
     printf("generating %s\n", TOKEN_FILE);
   }
 
-  fprintf(tokfile, "#define _EOI_   0\n");
+  fprintf(tokfile, "#define %-20s %d\n", "_EOI_", 0);
   for (i = MINTERM; i <= Cur_term; i++) {
-    fprintf(tokfile, "#define %-10s %d\n", Terms[i]->name, (i - MINTERM) + 1);
+    fprintf(tokfile, "#define %-20s %d\n", Terms[i]->name, (i - MINTERM) + 1);
   }
 
   fclose(tokfile);

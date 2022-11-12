@@ -6,9 +6,9 @@
 #include "parser.h"
 
 /*
- * this file is a rbison input file that creates a parser for rbsion, like a snake
+ * this file is a rbison input file that creates a parser for rbison, like a snake
  * eating its tail. the resulting yyparse.c file can be used in place of the
- * recursive-descent parser in llpar.c. note that, though this file is certainly
+ * recursive-descent parser in llparser.c. note that, though this file is certainly
  * easier to write than the recursive-descent version, the resulting code is
  * about 1k larger. nows() should be called before firing up the parser.
  * most of the external subroutines called from this module are in acts.c.
@@ -20,7 +20,6 @@ extern void nows(void); /* declared in parser.l */
 extern void ws(void); /* declared in parser.l */
 
 #define YYSTYPE char * /* value-stack type */ 
-
 
 %}
 
@@ -47,7 +46,7 @@ spec : defs SEPARATOR { first_sym(); } rules end
     ;
 
 end : { ws(); } SEPARATOR
-    |   / *empty */
+    |   /* empty */
     ;
 defs : PERCENT_UNION ACTION         { union_def(yytext); } defs
     | TYPE                        fname { new_field(""); } defs
@@ -74,7 +73,7 @@ pnames : NAME { prec_list(yytext); } pnames
     | /* empty */
     ;
  
-rules : rule rules;
+rules : rule rules
     | /* empty */
     ;
 
