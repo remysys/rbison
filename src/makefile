@@ -18,6 +18,10 @@ rbison:	$(OBJS) lib sbison yyout.o
 test: lex.yy.c
 	$(CC) -o parser lex.yy.c -llex $(CFLAGS)
 
+calc: rbison
+	rlex -vl ../test/expr.l
+	./rbison -vl ../test/expr.y
+
 clean:
 	rm -fr *.o
 	rm -fr lex.yy.c
