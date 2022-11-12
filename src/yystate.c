@@ -1143,7 +1143,7 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
 		     * template pointer
 		     */
         ADD(redundant, j);
-        table[j] = elep;
+        table[j] = (ACT *) elep;
       }
     }
   }

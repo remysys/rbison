@@ -10,7 +10,7 @@
 
 
 #include <stdlib.h>	  /* prototype for exit() */
-#include <l.h>        /* for the ii_ and yy_ functions in l.lib */
+#include <rlex/l.h>        /* for the ii_ and yy_ functions in l.lib */
 
 FILE  *yycodeout;		  /* output stream (code) */
 FILE  *yybssout;		  /* output stream (bss ) */
@@ -29,7 +29,7 @@ void 	yycomment   (char *fmt, ...);
 int	yy_nextoken   (void);
 
 
-extern unsigned char *ii_ptext();
+extern char *ii_ptext();
 extern int  ii_plength();		        
 extern int  ii_plineno();
 ?
@@ -108,7 +108,7 @@ typedef short YY_TTYPE;
 #    define YYP   YYPRIVATE
 #endif
 
-YYPRIVATE int	yynerrs = 0;			 /* Number of errors */
+int	yynerrs = 0;			 /* Number of errors */
 
 yystk_dcl(Yy_stack, int, YYMAXDEPTH); 	 /* state stack */
 
@@ -123,12 +123,12 @@ YYP int Yy_rhslen;			 	 /* Number of nonterminals on right-hand side of the prod
 
 /* prototypes for internal functions (local statics) */
 
-YY_TTYPE yy_next(YY_TTYPE **table, YY_TTYPE cur_state, int input);
-void yy_init_stack(void);
-int yy_recover(int tok, int suppress);
-void yy_shift(int new_state, int lookahead);
+YYPRIVATE YY_TTYPE yy_next(YY_TTYPE **table, YY_TTYPE cur_state, int input);
+YYPRIVATE void yy_init_stack(void);
+YYPRIVATE int yy_recover(int tok, int suppress);
+YYPRIVATE void yy_shift(int new_state, int lookahead);
 int yy_act(int yy_production_number, YYSTYPE *yyvsp);
-void yy_reduce(int prod_num, int amount);
+YYPRIVATE void yy_reduce(int prod_num, int amount);
 
 
 @ action subroutine and the tables go here:
@@ -301,7 +301,7 @@ int yyparse()
   suppress_err = 0;
 
   while(1) {
-    act_num = yy_next(Yy_action, yystk_item(Yy, stack, 0), yylookahead);
+    act_num = yy_next(Yy_action, yystk_item(Yy_stack, 0), yylookahead);
     
     if (suppress_err) {
       --suppress_err;
@@ -340,7 +340,7 @@ int yyparse()
 	     */
       act_num = -act_num;
       Yy_rhslen = Yy_reduce[act_num];
-      Yy_val = Yy_vsp[Yy_rhslen ? Yy_rhslen - 1; 0]; /* $$ = $1 */
+      Yy_val = Yy_vsp[Yy_rhslen ? Yy_rhslen - 1 : 0]; /* $$ = $1 */
       
       if (yytext = (char *) ii_ptext()) { /* (1) */
         yylineno = ii_plineno();

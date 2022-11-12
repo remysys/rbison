@@ -210,10 +210,10 @@ void patch()
 
   static char *top[] = {
 	  "",
-	  "yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer",
+	  "yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer */",
 	  "{",
 
-	  " /* This subroutine holds all the actions in the original input",
+	  " /* this subroutine holds all the actions in the original input",
 	  "  * specification. It normally returns 0, but if any of your",
 	  "  * actions return a non-zero number, then the parser halts",
 	  "  * immediately, returning that nonzero number to the calling",

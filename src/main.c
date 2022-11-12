@@ -133,7 +133,7 @@ void parse_args(int argc, char *argv[])
   char *p;
   
   static char *usage_msg[] = {
-    "usage is:  rbison [-switch] file",
+    "usage is:  rbison [-options] file",
 	  "",
     "\tcreate an LALR(1) parser from the specification in the",
 	  "\tinput file. legal command-line switches are:",
@@ -187,8 +187,9 @@ void parse_args(int argc, char *argv[])
     Use_stdout = 1;
   }
 
-  if (argc <= 0) { /* input from standard input */
-    No_lines = 1;
+  if (argc <= 0) { 
+    printv(stderr, usage_msg);
+    exit(EXIT_ILLEGAL_ARG);
   } else if (argc > 1) {
     fprintf(stderr, "too many arguments\n");
     printv(stderr, usage_msg);
@@ -294,14 +295,13 @@ static void tail()
 
   extern int yylineno;  /* lex generated */
   extern char *yytext;  /* lex generated */
-  int c, i, sign;
-  char fname[80], *p;   /* filed name in $<...>n */
+  int c;
 
   output("%s", yytext); /* output newline following %% */
   
   if (!No_lines) {
     output("\n#line %d \"%s\"\n", yylineno, Input_file_name);
-  } 
+  }
 
   ii_unterm();  /* lex will have terminated yytext */
   

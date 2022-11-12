@@ -172,7 +172,7 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
 [^\x00-\s%\{}[\]()*:|;,<>]+     return NAME;
 [\x00-\s] { if (!Ignore) { 
               return WHITESPACE;
-            } 
+            }
           }
 %%
 

@@ -5,14 +5,13 @@ static FILE *Driver_file;
 
 static FILE *Input_file = NULL;        /* rbison.par default */
 static int Input_line;                 /* line number of most-recently read line */
+static char *File_name = "rbison.par"; /* template file name */
 
 FILE *driver_1(FILE *output, int lines) 
 {
 	
-  if (!(Input_file = fopen("rbison.par", "r"))) {
-    if (!(Input_file = fopen(Input_file_name, "r"))) {
-      return NULL;
-    }
+  if (!(Input_file = fopen(File_name, "r"))) {
+    return NULL;
   }
 
   Input_line = 0;
@@ -26,11 +25,11 @@ int driver_2(FILE *output, int lines)
   char *p;
   int processing_comment = 0;
   if (!Input_file) {
-    ferr("internal error [driver_2], template file %s not open\n", Input_file_name);
+    ferr("internal error [driver_2], template file %s not open\n", File_name);
   }
 
   if (lines) {
-    fprintf(output, "\n#line %d \"%s\"\n", Input_line + 1, Input_file_name);
+    fprintf(output, "\n#line %d \"%s\"\n", Input_line + 1, File_name);
   }
 
   while(fgets(buf, sizeof(buf), Input_file)) {
@@ -50,7 +49,7 @@ int driver_2(FILE *output, int lines)
       /* but current line is not */
       processing_comment = 0;
       if (lines) {
-        fprintf(output, "\n#line %d \"%s\"\n", Input_line, Input_file_name);
+        fprintf(output, "\n#line %d \"%s\"\n", Input_line, File_name);
       }
     }
 
