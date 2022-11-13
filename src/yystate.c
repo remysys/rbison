@@ -94,7 +94,7 @@ static int Sort_by_number;
 
 ITEM *Recycled_items = NULL;
 
-#define MAX_TOK_PER_LINE 10
+#define MAX_TOK_PER_LINE 15
 static int Tokens_printed; /* controls number of lookaheads printed on a single line of yyout.doc */
 
 

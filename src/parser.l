@@ -163,8 +163,7 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
 "%left"     return LEFT;
 "%right"    return RIGHT;
 "%nonassoc" return NONASSOC;
-"%prec"	    return PREC;
-"%start"    return START;
+"%prec"     return PREC;
 ":"         return COLON;
 "|"         return OR;
 ";"         return SEMI;

@@ -13,14 +13,14 @@ sbison: llparser.o $(OBJS) lib
 
 #final bison
 rbison:	$(OBJS) lib sbison yyout.o
-	$(CC) -o $@ $(OBJS) llparser.o ../lib/libcomp.a -llex
+	$(CC) -o $@ $(OBJS) yyout.o ../lib/libcomp.a -llex
 
 test: lex.yy.c
 	$(CC) -o parser lex.yy.c -llex $(CFLAGS)
 
 calc:
 	rlex -vl ../test/expr.l
-	./rbison -vl ../test/expr.y
+	./rbison -Vl ../test/expr.y
 	$(CC) -o $@ lex.yy.c yyout.c -llex $(CFLAGS)
 
 clean:
@@ -47,4 +47,4 @@ lex.yy.c:	parser.l
 
 yyout.o:	yyout.c parser.h
 yyout.c: parser.y
-	./sbison parser.y
+	./sbison -vls parser.y

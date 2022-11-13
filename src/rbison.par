@@ -273,7 +273,7 @@ YYPRIVATE int yy_recover(int token, int suppress)
     }
 
     yystk_p(Yy_stack) = old_sp;
-  } while (ii_mark_prev(), token = yy_nexttoken());
+  } while (ii_mark_prev(), token = yy_nextoken());
 
   /* recovery failed */
   return 0;

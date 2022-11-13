@@ -31,7 +31,6 @@ extern void ws(void); /* declared in parser.l */
 %token NAME           /* name */
 %token NONASSOC       /* %nonassoc */
 %token OR             /* | */
-%token OTHER          /* anything else (used only in yypar.c) */
 %token PREC           /* %prec */
 %token RIGHT          /* %right */
 %token SEMI           /* ; */
