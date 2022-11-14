@@ -343,6 +343,8 @@ static void pstate(STATE *state)
       if (p->do_this == 0) {
         if (p->sym == _EOI_) {
           document("  accept on end of input\n");
+        } else if (p->sym == WHITESPACE) {
+          document("  accept on whitespace\n");
         } else {
           error(FATAL, "state: %d illegal accept", state->num);
         }
@@ -1414,9 +1416,10 @@ void make_parse_tables()
     error(FATAL, "start symbol must have only one right-hand side\n");
   }
 
-  item = newitem(start_prod);   /* make item for start production */
-  ADD(item->lookaheads, _EOI_); /* end-of-input marker as a lookahead symbol */
-
+  item = newitem(start_prod);         /* make item for start production */
+  ADD(item->lookaheads, _EOI_);       /* end-of-input marker as a lookahead symbol */
+  ADD(item->lookaheads, WHITESPACE);  /* whitespace marker as a lookahead symbol */
+  
   newstate(&item, 1, &state);
   if (lr(state)) {  /* add shifts and gotos to the table */
     if (Verbose) {

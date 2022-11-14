@@ -20,7 +20,7 @@ test: lex.yy.c
 
 calc:
 	rlex -vl ../test/expr.l
-	./rbison -Vl ../test/expr.y
+	./rbison -vsl ../test/expr.y
 	$(CC) -o $@ lex.yy.c yyout.c -llex $(CFLAGS)
 
 clean:
