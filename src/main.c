@@ -118,6 +118,7 @@ void error(int fatal, char *fmt, ...)
   fflush(stdout);
 
   if (Verbose && Doc_file) {
+    va_start(args, fmt);
     fprintf(Doc_file, type);
     vfprintf(Doc_file, fmt, args);
   }

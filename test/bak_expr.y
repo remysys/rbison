@@ -26,20 +26,10 @@ exp: factor
 factor: term
   | factor MUL term { $$ = $1 * $3; }
   | factor DIV term { $$ = $1 / $3; }
+  ;
 
 term: NUMBER
   | LP exp RP { $$ = $2; }
   ;
 %%
-int main()
-{
-  printf("> ");
-  yyparse();
-}
 
-/*
-void yyerror(char *s)
-{
-  fprintf(stderr, "error: %s\n", s);
-}
-*/
