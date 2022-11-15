@@ -27,7 +27,7 @@ factor: term
   | term DIV factor { $$ = $1 / $3; }
   ;
 
-term: NUMBER
+term: NUM
   ;
 %%
 
