@@ -102,9 +102,9 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
           in_string = !in_string;
         } else if (i == '\'' && !(in_string || in_comment)) {
           in_char_const = !in_char_const;
-        } else if (lb1 == '/' && i == '*' && !in_string) {
+        } else if (lb1 = '/' && i == '*' && !in_string) {
           in_comment = 1;
-        } else if (lb1 == '*' && i == '/' && in_comment) {
+        } else if (lb1 = '*' && i == '/' && in_comment) {
           in_comment = 0;
         }
 
@@ -207,6 +207,7 @@ void plex(int lex) {
     case RIGHT:         printf("RIGHT (%s)\n", yytext);           break;
     case SEMI:          printf("SEMI (%s)\n", yytext);            break;
     case SEPARATOR:     printf("SEPARATOR (%s)\n", yytext);       break;
+    case START:         printf("START (%s)\n", yytext);           break;
     case TERM_SPEC:     printf("TERM_SPEC (%s)\n", yytext);       break;
     case TYPE:          printf("TYPE (%s)\n", yytext);            break;
     case WHITESPACE:    printf("WHITESPACE (%s)\n", yytext);      break;

@@ -298,7 +298,11 @@ static void tail()
   extern char *yytext;  /* lex generated */
   int c;
 
-  output("%s", yytext); /* output newline following %% */
+   /* output newline following %% . note that yytext and yyleng are undefined at this point because
+    * they were modified in yyparse() when input was accepted, below. you must use ii_text(), etc.,
+    * to put them into a reasonable condition if you expect to access them in tail()
+    */
+  output("%s", ii_text());
   
   if (!No_lines) {
     output("\n#line %d \"%s\"\n", yylineno, Input_file_name);

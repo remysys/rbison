@@ -21,7 +21,7 @@ test: lex.yy.c
 calc:
 	rlex -vl ../test/expr.l
 	./rbison -vsl ../test/expr.y
-	$(CC) -o $@ lex.yy.c yyout.c -llex $(CFLAGS)
+	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
 
 clean:
 	rm -fr *.o
@@ -29,6 +29,7 @@ clean:
 	rm -fr rbison
 	rm -fr sbison
 	rm -fr test
+	rm -fr calc
 	rm -fr yyout.h
 	rm -fr yyout.c
 	rm -fr yyout.doc
