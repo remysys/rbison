@@ -15,12 +15,16 @@ sbison: llparser.o $(OBJS) lib
 rbison:	$(OBJS) lib sbison yyout.o
 	$(CC) -o $@ $(OBJS) yyout.o ../lib/libcomp.a -llex
 
-test: lex.yy.c
+.PHONY: test
+
+test:	test_lex expr_1
+
+test_lex: lex.yy.c
 	$(CC) -o test -DMAIN lex.yy.c -llex $(CFLAGS)
 
-calc:
+expr_1:	
 	rlex -vl ../test/expr.l
-	./rbison -vsl ../test/expr.y
+	./rbison -vsl ../test/expr_1.y
 	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
 
 clean:
@@ -28,8 +32,8 @@ clean:
 	rm -fr lex.yy.c
 	rm -fr rbison
 	rm -fr sbison
-	rm -fr test
-	rm -fr calc
+	rm -fr test_lex
+	rm -fr expr_1
 	rm -fr yyout.h
 	rm -fr yyout.c
 	rm -fr yyout.doc
