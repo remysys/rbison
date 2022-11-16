@@ -20,10 +20,10 @@ rbison:	$(OBJS) lib sbison yyout.o
 test:	test_lex expr_1
 
 test_lex: lex.yy.c
-	$(CC) -o test -DMAIN lex.yy.c -llex $(CFLAGS)
+	$(CC) -o $@ -DMAIN lex.yy.c -llex $(CFLAGS)
 
 expr_1:	
-	rlex -vl ../test/expr.l
+	rlex -vl ../test/expr_1.l
 	./rbison -vsl ../test/expr_1.y
 	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
 

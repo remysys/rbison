@@ -18,16 +18,23 @@ calclist:
   ;
 
 exp: factor
-  | factor AD exp  { $$ = $1 + $3; }
-  | factor SUB exp { $$ = $1 - $3; }
+  | exp AD factor  { $$ = $1 + $3; }
+  | exp SUB factor { $$ = $1 - $3; }
   ;
 
 factor: term
-  | term MUL factor { $$ = $1 * $3; }
-  | term DIV factor { $$ = $1 / $3; }
+  | factor MUL term { $$ = $1 * $3; }
+  | factor DIV term { $$ = $1 / $3; }
   ;
 
 term: NUM
   ;
 %%
+int main(int argc, char *argv[])
+{
+  ii_advance();
+  ii_mark_start(); // skipping leading newline 
+  yyparse();
+  return 0; 
+}
 
