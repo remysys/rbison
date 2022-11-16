@@ -8,6 +8,9 @@ extern int yylval;
 "-" { return SUB;}
 "*" { return MUL;}
 "/" { return DIV;}
+"(" { return LP; }
+")" { return RP; }
+"|" { return ABS; }
 
 [0-9]+  { yylval = atoi(yytext); return NUM; }
 

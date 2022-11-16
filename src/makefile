@@ -17,7 +17,7 @@ rbison:	$(OBJS) lib sbison yyout.o
 
 .PHONY: test
 
-test:	test_lex expr_1
+test:	test_lex expr_1 expr_2
 
 test_lex: lex.yy.c
 	$(CC) -o $@ -DMAIN lex.yy.c -llex $(CFLAGS)
@@ -27,6 +27,11 @@ expr_1:
 	./rbison -vsl ../test/expr_1.y
 	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
 
+expr_2:	
+	rlex -vl ../test/expr_2.l
+	./rbison -vsl ../test/expr_2.y
+	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
+
 clean:
 	rm -fr *.o
 	rm -fr lex.yy.c
@@ -34,6 +39,7 @@ clean:
 	rm -fr sbison
 	rm -fr test_lex
 	rm -fr expr_1
+	rm -fr expr_2
 	rm -fr yyout.h
 	rm -fr yyout.c
 	rm -fr yyout.doc
