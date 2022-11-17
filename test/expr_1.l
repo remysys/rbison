@@ -4,7 +4,7 @@ extern int yylval;
 %}
 
 %%
-"+" { return AD; }
+"+" { return PLUS; }
 "-" { return SUB;}
 "*" { return MUL;}
 "/" { return DIV;}
