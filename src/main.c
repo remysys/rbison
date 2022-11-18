@@ -136,9 +136,9 @@ void parse_args(int argc, char *argv[])
   static char *usage_msg[] = {
     "usage is: rbison [-options] file",
 	  "",
-    "\tcreate an LALR(1) parser from the specification in the",
-	  "\tinput file. legal command-line options are:",
-	  "",
+    "  create an LALR(1) parser from the specification in the",
+    "  input file. legal command-line options are:",
+    "",
     "-a   output actions only (see -p)",
     "-l   suppress #(L)ine directives",
     "-p   output parser only (can be used with -T also)",
