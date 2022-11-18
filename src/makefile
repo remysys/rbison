@@ -30,27 +30,27 @@ test_lex: lex.yy.c
 expr_1:
 	rlex -vl ../test/expr_1.l
 	./rbison -vsl ../test/expr_1.y
-	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
+	$(CC) -o $@ lex.yy.c y.tab.c ../lib/libcomp.a -llex $(CFLAGS)
 
 expr_2:
 	rlex -vl ../test/expr_2.l
 	./rbison -vsl ../test/expr_2.y
-	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
+	$(CC) -o $@ lex.yy.c y.tab.c ../lib/libcomp.a -llex $(CFLAGS)
 
 expr_3:
 	rlex -vl ../test/expr_3.l
 	./rbison -vsl ../test/expr_3.y
-	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
+	$(CC) -o $@ lex.yy.c y.tab.c ../lib/libcomp.a -llex $(CFLAGS)
 
 expr_4:
 	rlex -vl ../test/expr_4.l
 	./rbison -vsl ../test/expr_4.y
-	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
+	$(CC) -o $@ lex.yy.c y.tab.c ../lib/libcomp.a -llex $(CFLAGS)
 
 expr_5:
 	rlex -vl ../test/expr_5.l
 	./rbison -vsl ../test/expr_5.y
-	$(CC) -o $@ lex.yy.c yyout.c ../lib/libcomp.a -llex $(CFLAGS)
+	$(CC) -o $@ lex.yy.c y.tab.c ../lib/libcomp.a -llex $(CFLAGS)
 
 clean:
 	rm -fr *.o
@@ -64,10 +64,10 @@ clean:
 	rm -fr expr_3
 	rm -fr expr_4
 	rm -fr expr_5
-	rm -fr yyout.h
-	rm -fr yyout.c
-	rm -fr yyout.doc
-	rm -fr yyout.sym
+	rm -fr y.tab.h
+	rm -fr y.tab.c
+	rm -fr y.output
+	rm -fr y.sym
 	make -C ../lib clean
 
 yypatch.o:	yypatch.c	parser.h
@@ -81,6 +81,6 @@ lex.yy.o:	lex.yy.c	parser.h
 lex.yy.c:	parser.l
 	rlex -vl parser.l
 
-yyout.o:	yyout.c parser.h
-yyout.c: parser.y
+yyout.o:	y.tab.c parser.h
+y.tab.c: parser.y
 	./sbison -vls parser.y

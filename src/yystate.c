@@ -95,13 +95,13 @@ static int Sort_by_number;
 ITEM *Recycled_items = NULL;
 
 #define MAX_TOK_PER_LINE 15
-static int Tokens_printed; /* controls number of lookaheads printed on a single line of yyout.doc */
+static int Tokens_printed; /* controls number of lookaheads printed on a single line of y.output */
 
 
 static void *new(void) 
 {
   /* return an area of memory that can be used as either an ACT or GOTO.
-   * these objects cannot be freed.
+   * these objects cannot be freed
    */
   
   static ACT *eheap; /* assuming default initialization to NULL here */
@@ -315,8 +315,8 @@ static char *stritem(ITEM *item, int lookaheads)
 
 static void pstate(STATE *state)
 {
-  /* print one row of the parse table in human-readable form yyout.doc
-   * (stderr if -V is specified).
+  /* print one row of the parse table in human-readable form y.output
+   * (stderr if -V is specified)
    */
   
   int i;
@@ -915,7 +915,7 @@ static void addreductions(STATE *state, void *junk)
 {
   /* this routine is called for each state. it adds the reductions using the
    * disambiguating rules described in the text, and then prints the state to
-   * yyout.doc if Verbose is true
+   * y.output if Verbose is true
    */
   
   int i;
@@ -943,7 +943,7 @@ static void addreductions(STATE *state, void *junk)
 static void reductions()
 {
   /* do the reductions. if there's memory, sort the table by state number
-   * first so that yyout.doc will look nice
+   * first so that y.output will look nice
    */
   
   Sort_by_number = 1;
@@ -1432,18 +1432,18 @@ void make_parse_tables()
       printf("creating tables:\n");
     }
 
-    if (!Make_yyoutab) {  /* tables go in yyout.c */
+    if (!Make_yyoutab) {  /* tables go in y.tab.c */
       print_tab(Actions, "Yya", "Yy_action", 1);
       print_tab(Gotos, "Yyg", "Yy_goto", 1);
-    } else { /* tables go in yyoutab.c*/
+    } else { /* tables go in y.outab.c*/
 
       if (!(fp = fopen(TAB_FILE, "w"))) {
         error(NONFATAL, "can't open %s ignoring -T\n", TAB_FILE);
         print_tab(Actions, "Yya", "Yy_action", 1);
         print_tab(Gotos, "Yyg", "Yy_goto", 1);
       } else {
-        output("extern YY_TTYPE *Yy_action[]; /* in yyoutab.c */\n");
-        output("extern YY_TTYPE *Yy_goto[];   /* in yyoutab.c */\n");
+        output("extern YY_TTYPE *Yy_action[]; /* in y.outab.c */\n");
+        output("extern YY_TTYPE *Yy_goto[];   /* in y.outab.c */\n");
         old_output = Output;
         Output = fp;
         fprintf(fp, "#include <stdio.h>\n");

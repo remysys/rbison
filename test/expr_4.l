@@ -1,5 +1,5 @@
 %{
-#include "yyout.h"
+#include "y.tab.h"
 extern int yylval;
 %}
 %%

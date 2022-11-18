@@ -1,5 +1,5 @@
 @
-@ this file is written to the yyact.c file when a -a is given to rbison
+@ this file is written to the y.act.c file when a -a is given to rbison
 @ this section is output above any user-supplied code
 @
 

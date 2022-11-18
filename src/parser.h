@@ -68,12 +68,12 @@
 #define NOHDR    3
 #define DOLLAR_DOLLAR ((unsigned)~0 >> 1) /* passed to do_dollar() to indicate that $$ is to be processed */
 
-#define TOKEN_FILE "yyout.h"    /* output file for token #defines */
-#define PARSE_FILE "yyout.c"    /* output file for parser */
-#define ACT_FILE   "yyact.c"    /* used for output if -a specified */
-#define TAB_FILE   "yyoutab.c"  /* output file for parser tables (-T) */
-#define SYM_FILE   "yyout.sym"  /* output file for symbot table */
-#define DOC_FILE   "yyout.doc"  /* LALR(1) state machine description */
+#define TOKEN_FILE "y.tab.h"    /* output file for token #defines */
+#define PARSE_FILE "y.tab.c"    /* output file for parser */
+#define ACT_FILE   "y.act.c"    /* used for output if -a specified */
+#define TAB_FILE   "y.outab.c"  /* output file for parser tables (-T) */
+#define SYM_FILE   "y.sym"      /* output file for symbot table */
+#define DOC_FILE   "y.output"   /* LALR(1) state machine description */
 #define PAR_TEMPL  "rbison.par" /* template file for PARSE_FILE */
 #define ACT_TEMPL  "rbison-act.par" /* template file for ACT_FILE */
 #define PROG_NAME  "rbison"
@@ -168,10 +168,10 @@ CLASS SYMBOL *Terms[MINACT];
 CLASS PREC_TAB Precedence[MINNONTERM]; 
 
 CLASS char *Template I( = PAR_TEMPL ); /* template file for the parser; can be modified in main.c */
-CLASS HASH_TAB *Symtab;                /* the symbol table itself initialized in yyact.c */
+CLASS HASH_TAB *Symtab;                /* the symbol table itself initialized in y.act.c */
 CLASS SYMBOL *Goal_symbol I( = NULL ); /* pointer to symbol-table entry for the start(goal) symbol */
  
-/* the following are used by the acts in yyact.c */
+/* the following are used by the acts in y.act.c */
 
 CLASS int Cur_term        I( = MINTERM - 1);     /* current terminal */
 CLASS int Cur_nonterm     I( = MINNONTERM - 1);  /* current nonterminal */

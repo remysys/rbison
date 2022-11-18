@@ -49,7 +49,7 @@ void signon()
     screen = stderr;
   }
 
-  fprintf(screen, "rbison %s [%s]. (c) %s, ****.", VERSION, __DATE__,  __DATE__ + 7);
+  fprintf(screen, "rbison %s [%s]. (c) %s, r***.", VERSION, __DATE__,  __DATE__ + 7);
   fprintf(screen," all rights reserved.\n");
 
   if (screen != stderr) {
@@ -134,21 +134,20 @@ void parse_args(int argc, char *argv[])
   char *p;
   
   static char *usage_msg[] = {
-    "usage is:  rbison [-options] file",
+    "usage is: rbison [-options] file",
 	  "",
     "\tcreate an LALR(1) parser from the specification in the",
-	  "\tinput file. legal command-line switches are:",
+	  "\tinput file. legal command-line options are:",
 	  "",
     "-a   output actions only (see -p)",
-    "-g   make static symbols (G)lobal in yyparse.c",
     "-l   suppress #(L)ine directives",
     "-p   output parser only (can be used with -T also)",
     "-s   make (s)ymbol table",
     "-S   make more-complete (S)ymbol table",
     "-t   print all (T)ables (and the parser) to standard output",
-    "-T   move large tables from yyout.c to yyoutab.c",
+    "-T   move large tables from y.tab.c to y.outab.c",
     "-v   print (V)erbose diagnostics (including symbol table)",
-    "-V   more verbose than -v. implies -t, & yyout.doc goes to stderr",
+    "-V   more verbose than -v. implies -t, & y.output goes to stderr",
     "-w   suppress all warning messages",
     "-W   warnings (as well as errors) generate nonzero exit status",
     NULL
@@ -257,8 +256,8 @@ void output(char *fmt, ...)
 
 void document(char *fmt, ...)
 {
-  /* works like printf() but writes to yyout.doc (provided that the file
-   * is being created.
+  /* 
+   * works like printf() but writes to y.output (provided that the file is being created)
    */
   
   va_list args;

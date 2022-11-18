@@ -1,12 +1,12 @@
 %{
 #include <stdlib.h>
-#include "yyout.h"
+#include "y.tab.h"
 
 extern union {		      /* this definition must duplicate the %union in expr_5.y */
   int yy_def; /* default field, used when no %type found */
   struct ast *a;
   double d;
-} yylval;				        /* declared by rbison in yyout.c. */
+} yylval;				        /* declared by rbison in y.tab.c */
 %}
 
 %%
