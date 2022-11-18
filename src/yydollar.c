@@ -47,7 +47,7 @@ char *do_dollar(int num, int rhs_size, int lineno, PRODUCTION *prod, char *fname
         } else if (*(prod->rhs)[num - 1]->field) {
           sprintf(buf + len, ".%s", (prod->rhs)[num - 1]->field);
         } else {
-          error(WARNING, "line %d: no <field> assigned to $%d", lineno, num);
+          error(WARNING, "line %d: no <field> assigned to $%d, ", lineno, num);
           error(NOHDR, "using default int field\n");
           sprintf(buf + len, ".%s", DEF_FIELD);
         }

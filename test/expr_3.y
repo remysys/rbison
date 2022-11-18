@@ -9,13 +9,7 @@
 %left MUL DIV
 
 %%
-
-s : exprs
-  ;
-
-exprs : exprs e EOL  { printf("res = %d\n", $2); }
-      |
-      ;
+s : e EOL { printf("res = %d\n", $1); };
 
 e : e PLUS e    { $$ = $1 + $3; }
   | e SUB e   { $$ = $1 - $3; }

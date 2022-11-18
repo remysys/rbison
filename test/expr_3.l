@@ -11,7 +11,8 @@ extern int yylval;
 "(" { return LP; }
 ")" { return RP; }
 
-[0-9]+    { yylval = atoi(yytext); return NUM; }
-\n        { return EOL; }
-.         { yyerror("mystery character %c\n", *yytext); }
+[0-9]+  { yylval = atoi(yytext); return NUM; }
+\n      { return EOL; }
+[\s\t]   { /* ignore white space */ }
+.       { yyerror("mystery character %c\n", *yytext); }
 %%

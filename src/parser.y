@@ -48,7 +48,7 @@ end : { ws(); } SEPARATOR
     |   /* empty */
     ;
 defs : PERCENT_UNION ACTION         { union_def(yytext); } defs
-    | TYPE                        fname { new_field(""); } defs
+    | TYPE                       fnames { new_field(""); } defs
     | TERM_SPEC  { new_lev(0); } tnames { new_field(""); } defs
     | LEFT     { new_lev('l'); } pnames { new_field(""); } defs
     | RIGHT    { new_lev('r'); } pnames { new_field(""); } defs

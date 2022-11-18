@@ -900,7 +900,7 @@ static void reduce_one_item(STATE *state, ITEM *item)
         }
       }
 
-      if (Verbose > 1 || !resolved) {
+      if (Verbose > 0 || !resolved) {
         ++Shift_reduce;
         error(WARNING,"state %2d: shift/reduce conflict ", state->num);
         error(NOHDR, "%s/%d (choose %s) %s\n", Terms[token]->name, item->prod_num,

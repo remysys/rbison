@@ -9,13 +9,7 @@
 
 %%
 
-start : calclist
-      ;
-
-calclist :
-         | calclist exp EOL { printf("= %d\n> ", $2); }
-         | calclist EOL { printf("> "); } /* blank line or a comment */
-         ;
+s : exp EOL { printf("res = %d\n", $1); };
 
 exp : factor
     | exp PLUS factor  { $$ = $1 + $3; }
@@ -35,6 +29,6 @@ int main(int argc, char *argv[])
   ii_advance();
   ii_mark_start(); // skipping leading newline 
   yyparse();
-  return 0; 
+  return 0;
 }
 

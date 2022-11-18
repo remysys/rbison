@@ -214,7 +214,7 @@ void patch()
 	  "{",
 
 	  " /* this subroutine holds all the actions in the original input",
-	  "  * specification. It normally returns 0, but if any of your",
+	  "  * specification. it normally returns 0, but if any of your",
 	  "  * actions return a non-zero number, then the parser halts",
 	  "  * immediately, returning that nonzero number to the calling",
 	  "  * subroutine.",
