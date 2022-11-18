@@ -199,6 +199,7 @@ void rhs()
       advance();
       if (match(NAME)) {
        prec(yytext);
+       advance();
       } else {
         lerror(NONFATAL, "illegal <%s>, ignoring rest of production\n", yytext);
         lookfor(SEMI, SEPARATOR, OR, 0);
