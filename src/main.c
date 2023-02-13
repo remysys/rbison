@@ -9,9 +9,9 @@
 #include <compiler.h>
 #include <l.h>
 
-#	define  ALLOCATE
-#	include "parser.h"
-#	undef   ALLOCATE
+#define  ALLOCATE
+#include "parser.h"
+#undef   ALLOCATE
 
 static int Warn_exit        = 0;      /* set to 1 if -W on command line */
 static int Num_warnings     = 0;      /* total warnings printed */
@@ -24,12 +24,12 @@ static FILE *Doc_file       = NULL;   /* error log & machine description */
 
 /*
  * subroutine: 
- * file_header()	yydriver.c
- * code_header()	yydriver.c
- * driver()		    yydriver.c
- * tables()				yycode.c
- * patch()				yypatch.c
- * do_dollar()		yydollar.c
+ * file_header()  yydriver.c
+ * code_header()  yydriver.c
+ * driver()       yydriver.c
+ * tables()       yycode.c
+ * patch()        yypatch.c
+ * do_dollar()    yydollar.c
  */
 
 
@@ -138,7 +138,7 @@ void parse_args(int argc, char *argv[])
   
   static char *usage_msg[] = {
     "usage is: rbison [-options] file",
-	  "",
+    "",
     "  create an LALR(1) parser from the specification in the",
     "  input file. legal command-line options are:",
     "",
@@ -317,7 +317,7 @@ static void tail()
       ii_flush(1);
       continue;
     } else {
-	    outc(c);
+      outc(c);
     }
   }
 }

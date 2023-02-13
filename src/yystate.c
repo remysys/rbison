@@ -5,7 +5,7 @@
 #include <hash.h>
 #include <compiler.h>
 #include "parser.h"
-#include "llout.h"			/* for _EOI_ definition */
+#include "llout.h"  /* for _EOI_ definition */
 
 /* for statistics only: */
 static int Nitems         = 0;  /* number of LALR(1) items */
@@ -264,7 +264,7 @@ static void sprint_tok(char **bp, char *format, int arg)
   }
 
   if (++Tokens_printed >= MAX_TOK_PER_LINE) {
-    *bp += sprintf(*bp, "\n\t\t");
+    *bp += sprintf(*bp, "\n    ");
     Tokens_printed = 0;
   }
 }
@@ -299,7 +299,7 @@ static char *stritem(ITEM *item, int lookaheads)
   }
 
   if (lookaheads || Verbose > 1) {
-    bp += sprintf(bp, " (production %d, precedence %d)\n\t\t[", item->prod_num, item->prod->prec);
+    bp += sprintf(bp, " (production %d, precedence %d)\n    [", item->prod_num, item->prod->prec);
     Tokens_printed = 0;
     pset(item->lookaheads, (pset_t)sprint_tok, &bp);
     *bp++ = ']';
@@ -398,7 +398,7 @@ int newstate(ITEM **items, int nitems, STATE **statep)
 
   if (existing = (STATE *) findsym(States, NULL)) {
     /* state exists; by not setting "state" to NULL, we'll recycle
-	   * the newly allocated state on the next call
+     * the newly allocated state on the next call
      */
 
     *statep = existing;
@@ -772,13 +772,13 @@ static int do_close(ITEM *item, ITEM *closure_items[], int *nitems, int *maxitem
   /* the symbol to the right of the dot is a nonterminal. do the following:
    *
    *(1) for (every production attached to that nonterminal)
-   *(2)	if (the current production is not already in the set of closure items)
+   *(2) if (the current production is not already in the set of closure items)
    *(3)   add it;
    *(4) if (the d in [A->b.Cd, e] doesn't exist)
    *(5)   add e to the lookaheads in the closure production.
-   *	  else
+   *    else
    *(6)   the d in [A->b.Cd, e] does exist, compute FIRST(de) and add
-   *		  it to the lookaheads for the current item if necessary.
+   *    it to the lookaheads for the current item if necessary.
    */
 
   for (prod = item->right_of_dot->productions; prod; prod = prod->next) { /* (1) */
@@ -955,10 +955,10 @@ static void reductions()
 static void make_yy_lhs(PRODUCTION **prodtab)
 {
   static char *text[] = {
-	  "the Yy_lhs array is used for reductions. it is indexed by production",
-	  "number and holds the associated left-hand side adjusted so that the",
-	  "number can be used as an index into Yy_goto.",
-	  NULL
+    "the Yy_lhs array is used for reductions. it is indexed by production",
+    "number and holds the associated left-hand side adjusted so that the",
+    "number can be used as an index into Yy_goto.",
+    NULL
   };
 
   PRODUCTION *prod;
@@ -969,7 +969,7 @@ static void make_yy_lhs(PRODUCTION **prodtab)
   
   for (i = 0; i < Num_productions; ++i) {
     prod = *prodtab++;
-    output("\t/* %3d */\t%d", prod->num, ADJ_VAL(prod->lhs->val));
+    output("  /* %3d */  %d", prod->num, ADJ_VAL(prod->lhs->val));
 
     if (i != Num_productions - 1) {
       output(",");
@@ -985,9 +985,9 @@ static void make_yy_lhs(PRODUCTION **prodtab)
 static void make_yy_reduce(PRODUCTION **prodtab)
 {
   static char *text[] = {
-	  "the Yy_reduce[] array is indexed by production number and holds",
-	  "the number of symbols on the right-hand side of the production",
-	  NULL
+    "the Yy_reduce[] array is indexed by production number and holds",
+    "the number of symbols on the right-hand side of the production",
+    NULL
   };
 
   PRODUCTION *prod;
@@ -998,7 +998,7 @@ static void make_yy_reduce(PRODUCTION **prodtab)
   
   for (i = 0; i < Num_productions; i++) {
     prod = *prodtab++;
-    output("\t/* %3d */\t%d", prod->num, prod->rhs_len);
+    output("  /* %3d */  %d", prod->num, prod->rhs_len);
 
     if (i != Num_productions - 1) {
       output(",");
@@ -1068,42 +1068,42 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
   SET *redundant = newset();  /* mark redundant rows */
 
 
-  static char	*act_text[] = {
-	  "the Yy_action table is action part of the LALR(1) transition",
-	  "matrix. it's compressed and can be accessed using the yy_next()",
-	  "subroutine, declared below",
-	  "",
-	  "             Yya000[]={   3,   5,3   ,   2,2   ,   1,1   };",
-	  "  state number---+        |    | |",
-	  "  number of pairs in list-+    | |",
-	  "  input symbol (terminal)------+ |",
-	  "  action-------------------------+",
-	  "",
-	  "  action = yy_next(Yy_action, cur_state, lookahead_symbol);",
-	  "",
-	  "	action <  0   -- reduce by production n,  n == -action",
-	  "	action == 0   -- accept. (ie. reduce by production 0)",
-	  "	action >  0   -- shift to state n,  n == action",
-	  "	action == YYF -- error",
-	  NULL
+  static char *act_text[] = {
+    "the Yy_action table is action part of the LALR(1) transition",
+    "matrix. it's compressed and can be accessed using the yy_next()",
+    "subroutine, declared below",
+    "",
+    "             Yya000[]={   3,   5,3   ,   2,2   ,   1,1   };",
+    "  state number---+        |    | |",
+    "  number of pairs in list-+    | |",
+    "  input symbol (terminal)------+ |",
+    "  action-------------------------+",
+    "",
+    "  action = yy_next(Yy_action, cur_state, lookahead_symbol);",
+    "",
+    " action <  0   -- reduce by production n,  n == -action",
+    " action == 0   -- accept. (ie. reduce by production 0)",
+    " action >  0   -- shift to state n,  n == action",
+    " action == YYF -- error",
+    NULL
   };
 
-  static char	*goto_text[] = {
-	  "the Yy_goto table is goto part of the LALR(1) transition matrix",
-	  "",
-	  " nonterminal = Yy_lhs[ production number by which we just reduced ]",
-	  "",
-	  "              Yyg000[]={   3,   5,3   ,   2,2   ,   1,1   };",
-	  "  uncovered state-+        |    | |",
-	  "  number of pairs in list--+    | |",
-	  "  nonterminal-------------------+ |",
-	  "  goto this state-----------------+",
-	  "",
-	  "it's compressed and can be accessed using the yy_next() subroutine,",
-	  "declared below, like this:",
-	  "",
-	  "  goto_state = yy_next(Yy_goto, cur_state, nonterminal);",
-	  NULL
+  static char *goto_text[] = {
+    "the Yy_goto table is goto part of the LALR(1) transition matrix",
+    "",
+    " nonterminal = Yy_lhs[ production number by which we just reduced ]",
+    "",
+    "              Yyg000[]={   3,   5,3   ,   2,2   ,   1,1   };",
+    "  uncovered state-+        |    | |",
+    "  number of pairs in list--+    | |",
+    "  nonterminal-------------------+ |",
+    "  goto this state-----------------+",
+    "",
+    "it's compressed and can be accessed using the yy_next() subroutine,",
+    "declared below, like this:",
+    "",
+    "  goto_state = yy_next(Yy_goto, cur_state, nonterminal);",
+    NULL
   };
 
   comment(Output, table == Actions ? act_text : goto_text);
@@ -1141,9 +1141,9 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
 
       if (!e && !ele) {
         /* then the chains are the same. mark the chain being compared
-		     * as redundant, and modify table[j] to hold a pointer to the
-		     * template pointer
-		     */
+         * as redundant, and modify table[j] to hold a pointer to the
+         * template pointer
+         */
         ADD(redundant, j);
         table[j] = (ACT *) elep;
       }
@@ -1175,7 +1175,7 @@ static void print_tab(ACT **table, char *row_name, char *col_name, int make_priv
         outc(',');
       }
       if (column % 5 == 0) {
-        output("\n\t\t\t\t  ");
+        output("\n          ");
       }
     }
     output("};\n");
@@ -1234,17 +1234,17 @@ static int lr(STATE *cur_state)
     }
 
     /* closure()  adds normal closure items to closure_items array
-	   * kclose()   adds to that set all items in the kernel that have
-	   *            outgoing transitions (ie. whose dots aren't at the far
-	   *	          right)
+     * kclose()   adds to that set all items in the kernel that have
+     *            outgoing transitions (ie. whose dots aren't at the far
+     *            right)
 
-	   * qsort()   sorts the closure items by the symbol to the right
-	   *	         of the dot. epsilon transitions will sort to the head of
-	   *	         the list, followed by transitions on nonterminals,
-	   *	         followed by transitions on terminals
-	   * move_eps() moves the epsilon transitions into the closure kernel set.
-	   *            it returns the number of items that it moved
-	   */
+     * qsort()   sorts the closure items by the symbol to the right
+     *           of the dot. epsilon transitions will sort to the head of
+     *           the list, followed by transitions on nonterminals,
+     *           followed by transitions on terminals
+     * move_eps() moves the epsilon transitions into the closure kernel set.
+     *            it returns the number of items that it moved
+     */
     nclose = closure(cur_state, closure_items, MAXCLOSE);
     nclose = kclosure(cur_state, closure_items, MAXCLOSE, nclose);
     if (nclose == 0) {
@@ -1262,17 +1262,17 @@ static int lr(STATE *cur_state)
       }
     }
 
-    /* all of the remaining items have at least one symbol to the	right of the dot */
+    /* all of the remaining items have at least one symbol to the right of the dot */
     while (nclose > 0) { /* fails immediatly if no closure items */
       first_item = p;
       sym = (*first_item)->right_of_dot;
       val = sym->val;
 
       /* collect all items with the same symbol to the right of the dot 
-	     * on exiting the loop, nitems will hold the number of these items
-	     * and p will point at the first nonmatching item. finally nclose is
-	     * decremented by nitems. items = 0
-	     */
+       * on exiting the loop, nitems will hold the number of these items
+       * and p will point at the first nonmatching item. finally nclose is
+       * decremented by nitems. items = 0
+       */
       nitems = 0;
       do {
         movedot(*p++);
@@ -1280,15 +1280,15 @@ static int lr(STATE *cur_state)
       } while (--nclose > 0 && RIGHT_OF_DOT(*p) == val);
 
       /* (1) newstate() gets the next state. it returns NEW if the state
-	     *	   didn't exist previously, CLOSED if LR(0) closure has been
-	     *     performed on the state, UNCLOSED otherwise.
-	     * (2) add a transition from the current state to the next state.
-	     * (3) if it's a brand-new state, add it to the unfinished list.
-	     * (4) otherwise merge the lookaheads created by the current closure
-	     *     operation with the ones already in the state.
-	     * (5) if the merge operation added lookaheads to the existing set,
-	     *     add it to the unfinished list.
-	     */
+       *     didn't exist previously, CLOSED if LR(0) closure has been
+       *     performed on the state, UNCLOSED otherwise.
+       * (2) add a transition from the current state to the next state.
+       * (3) if it's a brand-new state, add it to the unfinished list.
+       * (4) otherwise merge the lookaheads created by the current closure
+       *     operation with the ones already in the state.
+       * (5) if the merge operation added lookaheads to the existing set,
+       *     add it to the unfinished list.
+       */
       
       isnew = newstate(first_item, nitems, &next); /* (1) */
       if (!cur_state->closed) { /* (2) */

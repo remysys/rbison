@@ -7,9 +7,9 @@
 #include <ctype.h>
 
 
-#include <stack.h>	/* stack-manipulation macros */
+#include <stack.h>  /* stack-manipulation macros */
 #include <string.h>
-#undef  stack_cls		/* make all stacks static */
+#undef  stack_cls   /* make all stacks static */
 #define stack_cls static
 
 #include "parser.h"
@@ -383,11 +383,11 @@ void add_to_rhs(char *object, int is_an_action)
       }
     } else {
       /* add an action. all actions are named "{DDD}" where DDD is the
-	     * action number. the curly brace in the name guarantees that this
-	     * name won't conflict with a normal name. i am assuming that calloc
-	     * is used to allocate memory for the new node (ie. that it's
-	     * initialized to zeros).
-	     */
+       * action number. the curly brace in the name guarantees that this
+       * name won't conflict with a normal name. i am assuming that calloc
+       * is used to allocate memory for the new node (ie. that it's
+       * initialized to zeros).
+       */
       sprintf(buf, "{%d}", ++Cur_act - MINACT);
       p = (SYMBOL *) newsym(sizeof(SYMBOL));
       strncpy(p->name, buf, NAME_MAX);

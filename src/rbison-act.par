@@ -11,7 +11,7 @@
 @
 
 
-#ifndef YYSTYPE		     	/* default value stack type */
+#ifndef YYSTYPE        /* default value stack type */
 #define YYSTYPE int
 #endif
 

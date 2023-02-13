@@ -33,7 +33,7 @@ e : e PLUS e  { $$ = newast('+', $1, $3); }
   | LP e RP   { $$ = $2; }
   | NUM       { $$ = newnum($1); }
   | SUB e %prec VERY_HIGH { $$ = newast('M', $2, NULL); }
-	;
+  ;
 
 %%
 struct ast {

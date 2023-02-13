@@ -85,7 +85,7 @@ void enlarge(int need, SET *set) {
   set->nbits = set->nsize * _BITS_IN_INT;
 }
 
-int	_addset(SET *set, int bit)
+int _addset(SET *set, int bit)
 {
   enlarge(_ROUND(bit), set);
   return _GBIT(set, bit, |=);
@@ -475,7 +475,7 @@ int main()
   for(i = 0; i < 40; i++) {
     printf("Set %d: ", i);
     pset(a[i], (pset_t) fprintf, stdout);
-    printf(i & 1 ? "\n" : "\t");
+    printf(i & 1 ? "\n" : "  ");
   }
 
   qsort(a, 40, sizeof(a[0]), scmp);
@@ -484,7 +484,7 @@ int main()
   for(i = 0; i < 40; i++) {
     printf("Set %d: ", i);
     pset(a[i], (pset_t) fprintf, stdout);
-    printf( i & 1 ? "\n" : "\t");
+    printf( i & 1 ? "\n" : "  ");
   }
   return 0;
 }

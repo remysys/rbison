@@ -197,7 +197,7 @@ int problems(void);                                   /* acts.c */
 SYMBOL *make_term(char *name);                        /* acts.c */
 SYMBOL *new_nonterm(char *name, int is_lhs);          /* acts.c */
 void add_to_rhs(char *object, int is_an_action);      /* acts.c */
-int fields_active(void);      	                      /* acts.c */
+int fields_active(void);                              /* acts.c */
 void first_sym(void);                                 /* acts.c */
 void init_acts(void );                                /* acts.c */
 void new_field(char *field_name);                     /* acts.c */

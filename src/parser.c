@@ -4,7 +4,7 @@
 #include "parser.h"
 
 /* 
- * parser.c:	a recursive-descent parser for grammar file
+ * parser.c: a recursive-descent parser for grammar file
  */
 
 extern int yylineno;  /* created by rlex */

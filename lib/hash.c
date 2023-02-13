@@ -202,44 +202,44 @@ unsigned int hash_pjw (unsigned char *name)
 
 typedef struct
 {
-  char          name[32];	/* hash key */
-  char          str[16];  /* used for error checking */
-  unsigned int  hval;	    /* hash value of name, also "	*/
-  int	          count;	  /* # of times word was encountered */
+  char          name[32]; /* hash key                        */
+  char          str[16];  /* used for error checking         */
+  unsigned int  hval;     /* hash value of name, also "      */
+  int           count;    /* # of times word was encountered */
 } STAB;
 
 void printword(void *sp, ...) {
-  printf("name: %s\tstr: %s\thval: %u\n", ((STAB *)sp)->name, ((STAB *)sp)->str, ((STAB *)sp)->hval);
+  printf("name: %s  str: %s  hval: %u\n", ((STAB *)sp)->name, ((STAB *)sp)->str, ((STAB *)sp)->hval);
 }
 
 int getword(char *buf)
 {
  /* generate 10 random words */
 
-	static int	wordnum = 10;
-	int	num_letters, let;
+  static int wordnum = 10;
+  int num_letters, let;
 
-	if(--wordnum < 0)
-	    return 0;
+  if(--wordnum < 0)
+    return 0;
 
-	while((num_letters = rand() % 16)  < 3)
-	    ;
+  while((num_letters = rand() % 16)  < 3)
+    ;
 
-	while(--num_letters >= 0) {
-    let = (rand() % 26) + 'a' ;	/* 26 letters in english */
+  while(--num_letters >= 0) {
+    let = (rand() % 26) + 'a' ; /* 26 letters in english */
     *buf++ = (rand() % 10) ? let : toupper(let) ;
-	}
+  }
 
-	*buf = '\0';
-	return 1;
+  *buf = '\0';
+  return 1;
 }
 
 int main(int argc, char *argv[])
 {
   char word[80];
-  STAB	*sp;
-  HASH_TAB	*tabp;
-  int		 c;
+  STAB *sp;
+  HASH_TAB *tabp;
+  int c;
 
   tabp = maketab(127, hash_add, strcmp );
 

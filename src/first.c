@@ -12,7 +12,7 @@ static int diff;
 void first_closure(SYMBOL *lhs)
 {
   /*
-   * lhs: current left-hand side	
+   * lhs: current left-hand side 
    * called for every element in the FIRST sets. adds elements to the first
    * sets. The following rules are used:
    *

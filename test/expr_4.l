@@ -4,12 +4,12 @@
 extern int yylval;
 %}
 %%
-"+"	return PLUS;
+"+" return PLUS;
 "-" return SUB;
-"*"	return MUL;
+"*" return MUL;
 "/" return DIV;
-"("	return LP;
-")"	return RP;
+"(" return LP;
+")" return RP;
 
 [0-9]+  { yylval = atoi(yytext); return NUM; }
 \n      { return EOL; }

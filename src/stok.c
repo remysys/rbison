@@ -21,10 +21,10 @@ void make_yy_stok()
   comment(Output, the_comment);
 
   output("char *Yy_stok[] = \n{\n");
-  output("\t/*  %3d */  \"%s\",\n", 0, "_EOI_");
+  output("  /*  %3d */  \"%s\",\n", 0, "_EOI_");
 
   for (i = MINTERM; i <= Cur_term; i++) {
-    output("\t/*  %3d */  \"%s\"", (i - MINTERM) + 1, Terms[i]->name);
+    output("  /*  %3d */  \"%s\"", (i - MINTERM) + 1, Terms[i]->name);
     if (i != Cur_term) {
       output(",\n");
     }

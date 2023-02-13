@@ -122,7 +122,7 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
       lerror(FATAL, "eof in code block starting on line %d\n", Start_line);
     }
 
-^"%%"	return SEPARATOR;
+^"%%" return SEPARATOR;
 
 "%{"[\s\t]* {
               /* copy a code block to the output file */
@@ -152,7 +152,7 @@ c_name  [A-Za-z_][A-Za-z_0-9]*
                   }
                 }
               }
-	            return CODE_BLOCK;
+              return CODE_BLOCK;
             }
  
 <{c_name}>  return FIELD;
@@ -183,7 +183,7 @@ int start_action() /* return starting line number of most recently read ACTION b
   return Start_line;
 }
 
-#ifdef MAIN	/* test routine,  reads lexemes and prints them */
+#ifdef MAIN /* test routine,  reads lexemes and prints them */
 
 int No_lines = 0;
 char *Input_file_name;
@@ -211,7 +211,7 @@ void plex(int lex) {
     case TYPE:          printf("TYPE (%s)\n", yytext);            break;
     case WHITESPACE:    printf("WHITESPACE (%s)\n", yytext);      break;
     default:            printf("*** unknown *** (%s)\n",yytext);  break;
-	}
+  }
 }
 
 int main(int argc, char *argv[])
@@ -235,8 +235,8 @@ int main(int argc, char *argv[])
   }
 }
 
-void output(char *fmt, ...) 	/* the real versions of these subroutines are in main.c.  */
-{	
+void output(char *fmt, ...)  /* the real versions of these subroutines are in main.c.  */
+{ 
   /* these stubs are here for debugging a standalone */
   va_list args;
   va_start(args, fmt);

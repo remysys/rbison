@@ -4,7 +4,7 @@
 #include "parser.h"
 
 /* 
- * llparser.c:	a recursive-descent parser for a very simple rbison.
+ * llparser.c: a recursive-descent parser for a very simple rbison.
  * there's a rbison input specification for a table-driven parser
  * in parser.y
  */
@@ -97,7 +97,7 @@ void right_side()
 {
 /* 
  * right_sides : {new_rhs} rhs OR right_sides 1
- *    | {new_rhs} rhs SEMI				            2
+ *    | {new_rhs} rhs SEMI                    2
  */
 
   new_rhs();

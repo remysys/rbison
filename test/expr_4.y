@@ -19,7 +19,7 @@ e : e PLUS e  { $$ = $1 + $3; }
   | LP e RP   { $$ = $2; }
   | NUM       { $$ = $1; }
   | SUB e %prec VERY_HIGH { $$ = -$2; }
-	;
+  ;
 %%
 int main() {
   ii_advance();

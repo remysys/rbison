@@ -18,12 +18,12 @@ static int Last_real_nonterm; /* this is the number of the last
   | reduction rather than a shift. this means that imbedded actions
   | (like this):
   |
-  |	foo : bar { act(1); } cow { act(2); };
+  | foo : bar { act(1); } cow { act(2); };
   |
   | have to be put in their own productions (like this):
   |
-  |	foo : bar {0} cow   { act(2); };
-  |	{0} : /* epsilon */ { act(1); };
+  | foo : bar {0} cow   { act(2); };
+  | {0} : /* epsilon */ { act(1); };
   |
   | where {0} is treated as a nonterminal symbol; once this is done, you
   | can print out the actions and get rid of the strings. note that,
@@ -58,10 +58,10 @@ static void print_one_case(int case_val, char *action, int rhs_size, int lineno,
     return;
   }
 
-  output("\n  case %d: /* %s */\n\n\t", case_val, production_str(prod));
+  output("\n  case %d: /* %s */\n\n  ", case_val, production_str(prod));
 
   if (!No_lines) {
-    output("#line %d \"%s\"\n\t", lineno, Input_file_name);
+    output("#line %d \"%s\"\n  ", lineno, Input_file_name);
   }
 
   while (*action) {
@@ -70,11 +70,11 @@ static void print_one_case(int case_val, char *action, int rhs_size, int lineno,
       output("%c", *action++);
     } else {
       /* skip the attribute reference. the if statement handles $$ the
-	     * else clause handles the two forms: $N and $-N, where N is a
-	     * decimal number. when we hit the do_dollar call (in the output()
-	     * call), "num" holds the number associated with N, or DOLLAR_DOLLAR
-	     * in the case of $$.
-	     */
+       * else clause handles the two forms: $N and $-N, where N is a
+       * decimal number. when we hit the do_dollar call (in the output()
+       * call), "num" holds the number associated with N, or DOLLAR_DOLLAR
+       * in the case of $$.
+       */
       
       if (*++action != '<') {
         *fname = '\0';
@@ -159,8 +159,8 @@ static void dopatch(SYMBOL *sym)
     }
 
     /* cur is no longer valid because of the --pp above 
-		 * count the number of nonactions in the right-hand
-		 * side	and modify imbedded actions
+     * count the number of nonactions in the right-hand
+     * side and modify imbedded actions
      */
     
     for (i = (pp - prod->rhs) + 1; --i >= 0; --pp) {
@@ -192,8 +192,8 @@ static void dopatch(SYMBOL *sym)
         cur->productions->prec = 0;
 
         /* since the new production goes to epsilon and nothing else,
-		     * FIRST(new) == {epsilon}
-		     */
+         * FIRST(new) == {epsilon}
+         */
         cur->first = newset();
         ADD(cur->first, EPSILON);
       }
@@ -205,35 +205,35 @@ void patch()
 {
   /* this subroutine does several things:
    *
-   *	 * it modifies the symbol table as described in the previous text
-   *	 * it prints the action subroutine and deletes the memory associated
-   *	      with the actions
+   *  * it modifies the symbol table as described in the previous text
+   *  * it prints the action subroutine and deletes the memory associated
+   *       with the actions
    */
 
   static char *top[] = {
-	  "",
-	  "int yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer */",
-	  "{",
+    "",
+    "int yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer */",
+    "{",
 
-	  " /* this subroutine holds all the actions in the original input",
-	  "  * specification. it normally returns 0, but if any of your",
-	  "  * actions return a non-zero number, then the parser halts",
-	  "  * immediately, returning that nonzero number to the calling",
-	  "  * subroutine.",
-	  "  */",
-	  "",
-	  "  switch( yypnum )",
-	  "  {",
-	  NULL
+    " /* this subroutine holds all the actions in the original input",
+    "  * specification. it normally returns 0, but if any of your",
+    "  * actions return a non-zero number, then the parser halts",
+    "  * immediately, returning that nonzero number to the calling",
+    "  * subroutine.",
+    "  */",
+    "",
+    "  switch( yypnum )",
+    "  {",
+    NULL
   };
   
   static char *bot[] = {
-	  "",
-	  "  }",
-	  "",
-	  "  return 0;",
-	  "}",
-	  NULL
+    "",
+    "  }",
+    "",
+    "  return 0;",
+    "}",
+    NULL
   };
 
   Last_real_nonterm = Cur_nonterm;
