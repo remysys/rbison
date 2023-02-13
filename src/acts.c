@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <compiler.h>
 #include <set.h>
 #include <hash.h>
+#include <ctype.h>
+
 
 #include <stack.h>	/* stack-manipulation macros */
 #include <string.h>

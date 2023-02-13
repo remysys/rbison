@@ -1,10 +1,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <compiler.h>
+#include <l.h>
 
 #	define  ALLOCATE
 #	include "parser.h"
@@ -34,7 +37,7 @@ void onintr(int signum) /* SIGINT (ctrl-break, ^C) hanlder */
 {
   if (Output != stdout) {
     fclose(Output);
-    unlink(Output_fname);
+    remove(Output_fname);
   }
   exit(EXIT_USR_ABRT);
 }
@@ -325,6 +328,7 @@ int do_file()
 
   struct timeval start_time, end_time;
   long time;
+  void nows(void); /* declared in parser.l */
    
   gettimeofday(&start_time, NULL); /* initialize times now so that the difference */
   end_time = start_time;           /* between times will be 0 if we don't build the tables */
@@ -342,8 +346,6 @@ int do_file()
     first();        /* find FIRST sets */
     code_header();  /* print various #define to output file */
     patch();        /* patch up the grammar and output the actions */  
-    
-    ftime(&start_time);
 
     if (Make_parser) {
       VERBOSE("make tables");
@@ -409,7 +411,7 @@ int main(int argc, char *argv[])
   } else {
     if (Output != stdout) {
       fclose(Output);
-      if (unlink(Output_fname) == -1) {
+      if (remove(Output_fname) == -1) {
         perror(Output_fname);
       }
     }

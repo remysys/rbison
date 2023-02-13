@@ -241,7 +241,7 @@ void make_yy_stok(void);      /* stok.c */
 
 
 void patch(void);   /* yypatch.c */
-void tbales(void);  /* yycode.c */
+void tables(void);  /* yycode.c */
 int yyparse(void);  /* llpar.c */
   
 #endif

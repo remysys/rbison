@@ -9,28 +9,27 @@
 #include <yystack.h>
 
 
-#include <stdlib.h>	  /* prototype for exit() */
-#include <rlex/l.h>        /* for the ii_ and yy_ functions in l.lib */
+#include <stdlib.h>   /* prototype for exit() */
+#include <l.h>        /* for the ii_ and yy_ functions in l.lib */
 
-FILE  *yycodeout;		  /* output stream (code) */
-FILE  *yybssout;		  /* output stream (bss ) */
-FILE  *yydataout;		  /* output stream (data) */
-int   yylookahead ;		/* lookahead token      */
+FILE  *yycodeout;     /* output stream (code) */
+FILE  *yybssout;      /* output stream (bss ) */
+FILE  *yydataout;     /* output stream (data) */
+int   yylookahead ;   /* lookahead token      */
 
-extern char *yytext;			/* declared by lex in lex.yy.c */
+extern char *yytext;  /* declared by lex in lex.yy.c */
 extern int  yylineno;
 extern int  yyleng;
 
-void	yycode	    (char *fmt, ...);	/* supplied below */
-void	yydata	    (char *fmt, ...);	
-void	yybss 	    (char *fmt, ...);
-void 	yyerror     (char *fmt, ...);
-void 	yycomment   (char *fmt, ...);
-int	yy_nextoken   (void);
-
+void yycode      (char *fmt, ...); /* supplied below */
+void yydata      (char *fmt, ...); 
+void yybss       (char *fmt, ...);
+void  yyerror    (char *fmt, ...);
+void  yycomment  (char *fmt, ...);
+int yy_nextoken  (void);
 
 extern char *ii_ptext();
-extern int  ii_plength();		        
+extern int  ii_plength();          
 extern int  ii_plineno();
 ?
 
@@ -40,19 +39,19 @@ extern int  ii_plineno();
 
 
 #ifndef YYACCEPT
-#define YYACCEPT return (0)	  /* action taken when input is accepted */
+#define YYACCEPT return (0)   /* action taken when input is accepted */
 #endif
 
 #ifndef YYABORT
-#define YYABORT return (1)	/* action taken when input is rejected */
+#define YYABORT return (1) /* action taken when input is rejected */
 #endif
 
 #ifndef YYPRIVATE
-#define YYPRIVATE static	/* define to a null string to make public */
+#define YYPRIVATE static /* define to a null string to make public */
 #endif
 
 #ifndef YYMAXERR
-#define YYMAXERR 25      	/* abort after this many errors */
+#define YYMAXERR 25       /* abort after this many errors */
 #endif
 
 #ifndef YYMAXDEPTH        /* state and value stack depth */
@@ -63,7 +62,7 @@ extern int  ii_plineno();
 #define YYCASCADE 5
 #endif
 
-#ifndef YYSTYPE		     	/* default value stack type */
+#ifndef YYSTYPE        /* default value stack type */
 #define YYSTYPE int
 #endif
 
@@ -74,7 +73,7 @@ extern int  ii_plineno();
 #define YYSHIFTACT(tos)  ((tos)[0] = yylval)
 #endif
 
-#undef  yystk_cls			        /* redefine stack macros for local use */
+#undef  yystk_cls           /* redefine stack macros for local use */
 #define yystk_cls YYPRIVATE
 
 /* 
@@ -85,12 +84,12 @@ extern int  ii_plineno();
  * longer use the -T command-line switch.
  */
 
-#define	YY_IS_ACCEPT	0	   	        /* accepting action (reduce by 0) */
-#define	YY_IS_SHIFT(s)  ((s) > 0)  	/* s is a shift action */
+#define YY_IS_ACCEPT 0             /* accepting action (reduce by 0) */
+#define YY_IS_SHIFT(s)  ((s) > 0)  /* s is a shift action */
 
 typedef short YY_TTYPE;
 
-#define YYF	((YY_TTYPE) ((unsigned short )~0 >>1))
+#define YYF ((YY_TTYPE) ((unsigned short )~0 >>1))
 
 /*
  * various global variables used by the parser. they're here because they can
@@ -108,17 +107,17 @@ typedef short YY_TTYPE;
 #    define YYP   YYPRIVATE
 #endif
 
-int	yynerrs = 0;			 /* Number of errors */
+int yynerrs = 0;    /* Number of errors */
 
-yystk_dcl(Yy_stack, int, YYMAXDEPTH); 	 /* state stack */
+yystk_dcl(Yy_stack, int, YYMAXDEPTH);   /* state stack */
 
-YYSTYPE yylval;			 	      /* attribute for last token */
-YYP YYSTYPE Yy_val;				  /* used to hold $$ */
+YYSTYPE yylval;             /* attribute for last token */
+YYP YYSTYPE Yy_val;         /* used to hold $$ */
 
-YYP YYSTYPE Yy_vstack[YYMAXDEPTH]; 	 	 /* value stack. can't use yystack.h macros because YYSTYPE could be a struct */
+YYP YYSTYPE Yy_vstack[YYMAXDEPTH];     /* value stack. can't use yystack.h macros because YYSTYPE could be a struct */
 YYP YYSTYPE *Yy_vsp;
 
-YYP int Yy_rhslen;			 	 /* Number of nonterminals on right-hand side of the production being reduced */
+YYP int Yy_rhslen;      /* Number of nonterminals on right-hand side of the production being reduced */
 
 
 /* prototypes for internal functions (local statics) */
@@ -315,29 +314,29 @@ int yyparse()
       suppress_err = YYCASCADE;
     } else if (YY_IS_SHIFT(act_num)) { /* simple shift action */
       /* note that yytext and yyleng are undefined at this point because
-	     * they were modified in the else clause, below. you must use
-	     * ii_text(), etc., to put them into a reasonable condition if
-	     * you expect to access them in a YY_SHIFT action.
-	     */
+       * they were modified in the else clause, below. you must use
+       * ii_text(), etc., to put them into a reasonable condition if
+       * you expect to access them in a YY_SHIFT action.
+       */
       
       yy_shift(act_num, yylookahead);
       ii_mark_prev();
       yylookahead = yy_nextoken();
     } else {
       /* do a reduction by -act_num. the activity at 1, below, gives YACC
-	     * compatibility. it's just making the current lexeme available in
-	     * yytext and '\0' terminating the lexeme. the '\0' is removed at 2.
-	     * the problem is that you have to read the next lookahead symbol
-	     * before you can reduce by the production that had the previous
-	     * symbol at its far right. note that, since production 0 has the
-	     * goal symbol on its left-hand side, a reduce by 0 is an accept
-	     * action. also note that ii_ptext()[ii_plength()] is used at (2)
-	     * rather than yytext[yyleng] because the user might have modified
-	     * yytext or yyleng in an action.
-	     *
-	     * rather than pushing junk as the $$=$1 action on an epsilon
-	     * production, the old tos item is duplicated in this situation.
-	     */
+       * compatibility. it's just making the current lexeme available in
+       * yytext and '\0' terminating the lexeme. the '\0' is removed at 2.
+       * the problem is that you have to read the next lookahead symbol
+       * before you can reduce by the production that had the previous
+       * symbol at its far right. note that, since production 0 has the
+       * goal symbol on its left-hand side, a reduce by 0 is an accept
+       * action. also note that ii_ptext()[ii_plength()] is used at (2)
+       * rather than yytext[yyleng] because the user might have modified
+       * yytext or yyleng in an action.
+       *
+       * rather than pushing junk as the $$=$1 action on an epsilon
+       * production, the old tos item is duplicated in this situation.
+       */
       act_num = -act_num;
       Yy_rhslen = Yy_reduce[act_num];
       Yy_val = Yy_vsp[Yy_rhslen ? Yy_rhslen - 1 : 0]; /* $$ = $1 */

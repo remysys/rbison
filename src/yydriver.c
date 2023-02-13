@@ -1,17 +1,20 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <compiler.h>
 #include "parser.h"
 
 static FILE *Driver_file;
 
-static FILE *Input_file = NULL;        /* rbison.par default */
-static int Input_line;                 /* line number of most-recently read line */
-static char *File_name = "rbison.par"; /* template file name */
+static FILE *Input_file = NULL;                         /* rbison.par default */
+static int Input_line;                                  /* line number of most-recently read line */
+static char *File_name = "/usr/local/lib64/rbison.par"; /* template file name */
 
 FILE *driver_1(FILE *output, int lines) 
 {
-	
-  if (!(Input_file = fopen(File_name, "r"))) {
-    return NULL;
+  if (!(Input_file = fopen("rbison.par", "r"))) {
+    if (!(Input_file = fopen(File_name, "r"))) {
+      return NULL;
+    }
   }
 
   Input_line = 0;

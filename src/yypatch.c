@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <compiler.h>
 #include "parser.h"
 
 
@@ -210,7 +212,7 @@ void patch()
 
   static char *top[] = {
 	  "",
-	  "yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer */",
+	  "int yy_act(int yypnum, YYSTYPE *yyvsp) /* production number and value-stack pointer */",
 	  "{",
 
 	  " /* this subroutine holds all the actions in the original input",

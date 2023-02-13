@@ -16,4 +16,8 @@ extern void fputstr (char *str, int maxlen, FILE *fp);
 /* ----------------rbison/lib/printv.c ---------------- */
 extern void printv(FILE *fp, char *argv[]);
 extern void comment(FILE *fp, char *argv[]);
+
+/* ---------------------rbison/src/yydriver.c-----------*/
+extern FILE *driver_1(FILE *output, int lines);
+extern int driver_2(FILE *output, int lines);
 #endif
