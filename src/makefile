@@ -22,6 +22,21 @@ fbison: $(OBJS) lib sbison yyout.o
 rbison: $(OBJS) lib parser.o
 	$(CC) -o $@ $(OBJS) parser.o ../lib/libcomp.a -ll
 
+
+install:
+	sudo cp -fr rbison /usr/local/bin/
+	sudo cp -fr rbison.par /usr/local/lib64/
+	sudo cp -fr rbison-act.par /usr/local/lib64/
+	sudo cp -fr ../lib/libl.a /usr/local/lib64/
+	sudo cp -fr ../include/l.h /usr/local/include/
+
+uninstall:
+	sudo rm -fr /usr/local/bin/rbison
+	sudo rm -fr /usr/local/lib64/rbison.par
+	sudo rm -fr /usr/local/lib64/rbison-act.par
+	sudo rm -fr /usr/local/lib64/libl.a
+	sudo rm -fr /usr/local/include/l.h
+
 test: clean rbison test_lex expr_1 expr_2 expr_3 expr_4 expr_5
 
 test_lex: lex.yy.c

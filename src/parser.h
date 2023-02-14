@@ -224,6 +224,7 @@ void lerror(int fatal, char *fmt, ...); /* main.c */
 char *open_errmsg(void);                /* main.c */
 void output(char *fmt, ...);            /* main.c */
 
+void driver(void);        /* yydriver.c */
 void file_header(void);   /* yydriver.c */
 void code_header(void);   /* yydriver.c */
 

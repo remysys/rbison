@@ -49,7 +49,7 @@ void code_header()
   driver_2(Output, !No_lines);
 }
 
-void driver()
+void driver(void)
 {
   /* print out the actual parser by copying rbison.par to the output file */
   if (Make_parser) {
