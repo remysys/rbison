@@ -68,13 +68,13 @@
 #define NOHDR    3
 #define DOLLAR_DOLLAR ((unsigned)~0 >> 1) /* passed to do_dollar() to indicate that $$ is to be processed */
 
-#define TOKEN_FILE "y.tab.h"    /* output file for token #defines */
-#define PARSE_FILE "y.tab.c"    /* output file for parser */
-#define ACT_FILE   "y.act.c"    /* used for output if -a specified */
-#define TAB_FILE   "y.outab.c"  /* output file for parser tables (-T) */
-#define SYM_FILE   "y.sym"      /* output file for symbot table */
-#define DOC_FILE   "y.output"   /* LALR(1) state machine description */
-#define PAR_TEMPL  "rbison.par" /* template file for PARSE_FILE */
+#define TOKEN_FILE "y.tab.h"        /* output file for token #defines */
+#define PARSE_FILE "y.tab.c"        /* output file for parser */
+#define ACT_FILE   "y.act.c"        /* used for output if -a specified */
+#define TAB_FILE   "y.outab.c"      /* output file for parser tables (-T) */
+#define SYM_FILE   "y.sym"          /* output file for symbot table */
+#define DOC_FILE   "y.output"       /* LALR(1) state machine description */
+#define PAR_TEMPL  "rbison.par"     /* template file for PARSE_FILE */
 #define ACT_TEMPL  "rbison-act.par" /* template file for ACT_FILE */
 #define PROG_NAME  "rbison"
 
@@ -224,7 +224,6 @@ void lerror(int fatal, char *fmt, ...); /* main.c */
 char *open_errmsg(void);                /* main.c */
 void output(char *fmt, ...);            /* main.c */
 
-void driver(void);        /* yydriver.c */
 void file_header(void);   /* yydriver.c */
 void code_header(void);   /* yydriver.c */
 
