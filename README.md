@@ -1,16 +1,16 @@
-rbison: a clear version of the GNU utility bison
+rbison: a clear and simple alternative to GNU rbison
 ===
 
-rbison takes as input a context-free grammar specification and produces a LALR(1) parser that recognizes correct instances of the grammar. you can use it to develop a wide range of language parsers, from those used in simple calculators to complex programming languages.
+`rbison` is a clear and simple alternative to GNU `Bison`. it takes a context-free grammar and generates an LALR(1) parser. with a clean and small codebase, `rbison` is easy to read, understand, and extend - great for learning and exploring how parser work.
 
 ![rbison internals](doc/rbison.png)
 
 Usage
 -----------
 ```
-$ cd src && make rbison
+$ cd src && make
 $ ./rbison 
-rbison 0.01 [gcc 4.8.5] [Nov 19 2022]. (c) 2022, ****. all rights reserved.
+rbison 0.02 [gcc 12.2.0] [Jul 22 2025]. (c) 2025, ****. all rights reserved.
 usage is: rbison [-options] file
 
   create an LALR(1) parser from the specification in the
@@ -29,7 +29,38 @@ usage is: rbison [-options] file
 -W   warnings (as well as errors) generate nonzero exit status
 ```
 
-run 'make test' to compile the usage samples in the test directory
+
+Example
+-----------
+this section shows how to run a calculator built with rbison.
+
+`rbison` uses [rlex](https://github.com/remysys/rlex) to generate the lexer. please install [rlex](https://github.com/remysys/rlex) first:
+```
+$ git clone https://github.com/remysys/rlex.git
+$ cd rlex/src
+$ make && make install
+```
+
+the `test/` directory contains five examples: `expr_1` to `expr_5`.
+each example consists of a `.l` file and a `.y` file:
+- the `.l` file defines lexical rules and is processed by `rlex` to generate the lexer.
+- the `.y` file defines grammar rules and is compiled by `rbison` to generate the parser.
+
+these examples show how `rbison` and `rlex` work together to build expression calculators with support for basic math, operator precedence, and floating-point numbers.
+
+run `make test` to build five calculator examples in the `test/` directory.
 ```
 $ make test
+```
+to try out one of the calculator demos:
+```
+$ ./expr_1
+```
+then enter an expression like:
+```
+$ 6 + 6 + 2 * 3
+```
+the program will evaluate the expression and print the result:
+```
+$ res = 18
 ```

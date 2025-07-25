@@ -18,7 +18,7 @@ static int Num_warnings     = 0;      /* total warnings printed */
 static char *Output_fname   = "????"; /* name of the output file */
 static FILE *Doc_file       = NULL;   /* error log & machine description */
 
-#define VERSION "0.01 [gcc 4.8.5]"
+#define RBISON_VERSION "0.02"
 
 #define VERBOSE(str)  if (Verbose) { printf( "%s:\n", (str)); } else
 
@@ -52,7 +52,7 @@ void signon()
     screen = stderr;
   }
 
-  fprintf(screen, "rbison %s [%s]. (c) %s, r***.", VERSION, __DATE__,  __DATE__ + 7);
+  fprintf(screen, "rbison %s [gcc %s] [%s]. (c) %s, ****.", RBISON_VERSION, __VERSION__, __DATE__,  __DATE__ + 7);
   fprintf(screen," all rights reserved.\n");
 
   if (screen != stderr) {
